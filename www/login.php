@@ -9,10 +9,12 @@ if (isset($_SESSION['user_id'])) {
 }
 
 $error = '';
+$redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
+    $redirect_to = $_POST['redirect'] ?? 'index.php';
 
     if (empty($email) || empty($password)) {
         $error = "Please enter both email and password.";
@@ -32,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['last_activity'] = time(); // Add last activity time
 
-                // Redirect to home page or dashboard
-                header("Location: index.php");
+                // Redirect to the original page or home page
+                header("Location: " . $redirect_to);
                 exit();
             } else {
                 $error = "Invalid email or password.";
@@ -42,6 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Invalid email or password.";
         }
     }
+}
+
+$message = '';
+if (isset($_GET['logout'])) {
+    $message = "You have been successfully logged out.";
 }
 ?>
 
@@ -58,6 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="container">
         <h1>Login to Libriverse</h1>
+        <?php if (!empty($message)): ?>
+            <div class="success"><?php echo htmlspecialchars($message); ?></div>
+        <?php endif; ?>
         <?php if (!empty($error)): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
@@ -70,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
             </div>
+            <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect_to); ?>">
             <button type="submit" class="btn-login">Login</button>
         </form>
         <p class="register-link">Don't have an account? <a href="register.php">Register here</a></p>
