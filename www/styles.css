@@ -1,0 +1,97 @@
+/* Reset some default styles */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Main container styling */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Search form styles */
+.search-form {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-form input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-form button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #0056b3;
+}
+
+/* Filters styling */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filters label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.filters select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Book gallery styling */
+.book-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.book {
+    background: #e0e0e0;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.book:hover {
+    background: #d1d1d1;
+}
+
+/* Media query for responsiveness */
+@media (max-width: 600px) {
+    .search-form {
+        flex-direction: column;
+    }
+    .search-form input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .filters {
+        flex-direction: column;
+    }
+}
