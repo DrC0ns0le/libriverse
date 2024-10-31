@@ -1,154 +1,240 @@
 <?php
-// Start the session and include database connection
-session_start();
-include 'db_connection.php'; // Adjust the path as needed
+include 'utils/db.php';
 
-// Initialize variables
+// Get filter parameters from URL
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-$selectedAuthor = isset($_GET['author']) ? $_GET['author'] : '';
 $selectedGenre = isset($_GET['genre']) ? $_GET['genre'] : '';
-$selectedLanguage = isset($_GET['language']) ? $_GET['language'] : '';
-$selectedType = isset($_GET['type']) ? $_GET['type'] : '';
+$selectedRating = isset($_GET['rating']) ? (float)$_GET['rating'] : 0;
+$selectedAuthor = isset($_GET['author']) ? $_GET['author'] : '';
 
-// Build the SQL query
-$query = "SELECT * FROM catalog WHERE 1=1"; // 1=1 for easier appending of conditions
-$params = [];
+// Function to get books based on search query and filters
+function searchBooks($conn, $query, $genre, $rating, $author, $limit = 12)
+{
+    $sql = "SELECT id, title, author, genre, ratings, image_link 
+            FROM catalog
+            WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
 
-if ($search) {
-    $query .= " AND title LIKE ?";
-    $params[] = "%" . $conn->real_escape_string($search) . "%";
-}
-if ($selectedAuthor) {
-    $query .= " AND author = ?";
-    $params[] = $selectedAuthor;
-}
-if ($selectedGenre) {
-    $query .= " AND genre = ?";
-    $params[] = $selectedGenre;
-}
-if ($selectedLanguage) {
-    $query .= " AND language = ?";
-    $params[] = $selectedLanguage;
-}
-if ($selectedType) {
-    $query .= " AND type = ?";
-    $params[] = $selectedType;
-}
+    $params = ["%$query%", "%$query%", "%$query%"];
+    $types = "sss";
 
-// Prepare the statement
-$stmt = $conn->prepare($query);
+    if (!empty($genre)) {
+        $sql .= " AND genre = ?";
+        $params[] = $genre;
+        $types .= "s";
+    }
 
-// Bind parameters dynamically
-if ($params) {
-    $types = str_repeat('s', count($params)); // Assuming all parameters are strings
+    if ($rating > 0) {
+        $sql .= " AND ratings >= ?";
+        $params[] = $rating;
+        $types .= "d";
+    }
+
+    if (!empty($author)) {
+        $sql .= " AND author = ?";
+        $params[] = $author;
+        $types .= "s";
+    }
+
+    $sql .= " ORDER BY RAND() LIMIT ?";
+    $params[] = $limit;
+    $types .= "i";
+
+    $stmt = $conn->prepare($sql);
     $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
 
-// Execute the statement
-$stmt->execute();
-$result = $stmt->get_result();
+// Get distinct genres, authors for filter options
+$genres = $conn->query("SELECT DISTINCT genre FROM catalog WHERE genre IS NOT NULL ORDER BY genre")->fetch_all(MYSQLI_ASSOC);
+$authors = $conn->query("SELECT DISTINCT author FROM catalog WHERE author IS NOT NULL ORDER BY author")->fetch_all(MYSQLI_ASSOC);
 
-// Fetch all books for display
-$books = [];
-while ($row = $result->fetch_assoc()) {
-    $books[] = $row;
+// If there's a search query or filters are set, use them to find books
+if (!empty($search) || !empty($selectedGenre) || $selectedRating > 0 || !empty($selectedAuthor)) {
+    $searchResults = searchBooks($conn, $search, $selectedGenre, $selectedRating, $selectedAuthor);
 }
 
-// Fetch distinct values for filters
-$authors = $conn->query("SELECT DISTINCT author FROM catalog")->fetch_all(MYSQLI_ASSOC);
-$genres = $conn->query("SELECT DISTINCT genre FROM catalog")->fetch_all(MYSQLI_ASSOC);
-$languages = $conn->query("SELECT DISTINCT language FROM catalog")->fetch_all(MYSQLI_ASSOC);
-$types = ['physical', 'electronic'];
+// Function to get random books with optional limit and conditions
+function getRandomBooks($conn, $limit = 6, $orderBy = '')
+{
+    $sql = "SELECT id, title, author, genre, ratings, image_link 
+            FROM catalog";
+
+    if (!empty($orderBy)) {
+        $sql .= " " . $orderBy;
+    } else {
+        $sql .= " ORDER BY RAND()";
+    }
+
+    $sql .= " LIMIT " . (int)$limit;
+
+    $result = $conn->query($sql);
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+// Get new releases (increased limit to 6 for scrolling)
+$newReleases = getRandomBooks($conn, 6, "ORDER BY id DESC");
+
+// Get popular books (increased limit to 6 for scrolling)
+$popularBooks = getRandomBooks($conn, 6, "ORDER BY ratings DESC");
+
+// Get top 3 genres by book count
+$genreQuery = "SELECT genre, COUNT(*) as count 
+               FROM catalog 
+               WHERE genre IS NOT NULL 
+               GROUP BY genre 
+               ORDER BY count DESC 
+               LIMIT 3";
+$genreResult = $conn->query($genreQuery);
+$topGenres = $genreResult->fetch_all(MYSQLI_ASSOC);
+
+// Get books for each top genre
+$booksByGenre = [];
+foreach ($topGenres as $genre) {
+    $genreName = $genre['genre'];
+    $genreSQL = "SELECT id, title, author, genre, ratings, image_link 
+                 FROM catalog 
+                 WHERE genre = '" . $conn->real_escape_string($genreName) . "'
+                 ORDER BY RAND() 
+                 LIMIT 6";
+    $result = $conn->query($genreSQL);
+    if ($result && $result->num_rows > 0) {
+        $booksByGenre[$genreName] = $result->fetch_all(MYSQLI_ASSOC);
+    }
+}
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>LibriVerse - Home</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Books - Libriverse</title>
+    <link rel="stylesheet" href="discover.css">
 </head>
+
 <body>
-    <div class="container">
+    <h1>Discover</h1>
 
-        <!-- Search Bar -->
-        <form method="GET" class="search-form">
-            <input type="text" name="search" placeholder="Search for books..." value="<?php echo htmlspecialchars($search); ?>">
-            <button type="submit">Search</button>
-        </form>
+    <div class="search-container">
+        <form action="" method="GET">
+            <input type="text" name="search" class="search-input" placeholder="Search for books, authors, or genres..." value="<?php echo htmlspecialchars($search); ?>">
 
-        <!-- Filters -->
-        <div class="filters">
-            <form method="GET">
-                <!-- Author Filter -->
-                <label for="author">Author:</label>
-                <select name="author">
-                    <option value="">All Authors</option>
-                    <?php foreach ($authors as $author): ?>
-                        <option value="<?php echo htmlspecialchars($author['author']); ?>" <?php if ($selectedAuthor == $author['author']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($author['author']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <!-- Genre Filter -->
-                <label for="genre">Genre:</label>
-                <select name="genre">
-                    <option value="">All Genres</option>
-                    <?php foreach ($genres as $genre): ?>
-                        <option value="<?php echo htmlspecialchars($genre['genre']); ?>" <?php if ($selectedGenre == $genre['genre']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($genre['genre']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <!-- Language Filter -->
-                <label for="language">Language:</label>
-                <select name="language">
-                    <option value="">All Languages</option>
-                    <?php foreach ($languages as $language): ?>
-                        <option value="<?php echo htmlspecialchars($language['language']); ?>" <?php if ($selectedLanguage == $language['language']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($language['language']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <!-- Type Filter -->
-                <label for="type">Type:</label>
-                <select name="type">
-                    <option value="">All Types</option>
-                    <?php foreach ($types as $type): ?>
-                        <option value="<?php echo strtolower($type); ?>" <?php if ($selectedType == strtolower($type)) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($type); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <button type="submit">Apply Filters</button>
-            </form>
-        </div>
-
-        <!-- Book Gallery -->
-        <div class="book-gallery">
-            <?php if (count($books) > 0): ?>
-                <?php foreach ($books as $book): ?>
-                    <div class="book-item">
-                        <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?> Cover" class="book-cover">
-                        <h3><?php echo htmlspecialchars($book['title']); ?></h3>
-                        <p><strong>Author:</strong> <?php echo htmlspecialchars($book['author']); ?></p>
-                        <p><strong>Price:</strong> $<?php echo htmlspecialchars($book['price']); ?></p>
-                        <a href="book.php?id=<?php echo $book['id']; ?>" class="view-details">View Details</a>
-                    </div>
+            <select name="genre">
+                <option value="">All Genres</option>
+                <?php foreach ($genres as $genre): ?>
+                    <option value="<?php echo htmlspecialchars($genre['genre']); ?>" <?php if ($selectedGenre == $genre['genre']) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars($genre['genre']); ?>
+                    </option>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <p>No books found matching your criteria.</p>
-            <?php endif; ?>
-        </div>
-    </div>
-</body>
-</html>
+            </select>
 
-<?php
-$stmt->close();
-$conn->close();
-?>
+            <select name="rating">
+                <option value="0">All Ratings</option>
+                <option value="4" <?php if ($selectedRating == 4) echo 'selected'; ?>>4+ Stars</option>
+                <option value="3" <?php if ($selectedRating == 3) echo 'selected'; ?>>3+ Stars</option>
+                <option value="2" <?php if ($selectedRating == 2) echo 'selected'; ?>>2+ Stars</option>
+                <option value="1" <?php if ($selectedRating == 1) echo 'selected'; ?>>1+ Stars</option>
+            </select>
+
+            <select name="author">
+                <option value="">All Authors</option>
+                <?php foreach ($authors as $author): ?>
+                    <option value="<?php echo htmlspecialchars($author['author']); ?>" <?php if ($selectedAuthor == $author['author']) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars($author['author']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+
+    <?php if (isset($searchResults)): ?>
+        <section class="section">
+            <div class="section-title">
+                <span>Search Results</span>
+            </div>
+            <div class="scroll-container">
+                <div class="book-grid">
+                    <?php foreach ($searchResults as $book): ?>
+                        <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                            <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                            <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
+                            <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
+                            <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
+                            <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <section class="section">
+        <div class="section-title">
+            <span>Popular Now</span>
+            <a href="#" class="see-all">See all</a>
+        </div>
+        <div class="scroll-container">
+            <div class="book-grid">
+                <?php foreach ($popularBooks as $book): ?>
+                    <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                        <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                        <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
+                        <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
+                        <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
+                        <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <?php foreach ($booksByGenre as $genre => $books): ?>
+        <section class="section">
+            <div class="section-title">
+                <span><?php echo htmlspecialchars($genre); ?></span>
+                <a href="#" class="see-all">See all</a>
+            </div>
+            <div class="scroll-container">
+                <div class="book-grid">
+                    <?php foreach ($books as $book): ?>
+                        <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                            <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                            <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
+                            <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
+                            <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
+                            <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+    <?php endforeach; ?>
+
+    <script>
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const bookCards = document.querySelectorAll('.book-card');
+
+            bookCards.forEach(card => {
+                const title = card.querySelector('.book-title').textContent.toLowerCase();
+                const author = card.querySelector('.book-author').textContent.toLowerCase();
+                const genre = card.querySelector('.book-genre').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
