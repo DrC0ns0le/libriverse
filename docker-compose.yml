@@ -1,0 +1,31 @@
+services:
+  php-apache:
+    build:
+      context: .
+      dockerfile: ./php.dockerfile
+    image: php-custom
+    ports:
+      - "14080:80"
+    volumes:
+      - ./www:/var/www/html
+      - ./apache/httpd.conf:/etc/apache2/conf-available/docker-php.conf
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "14880:80"
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: rootpassword
