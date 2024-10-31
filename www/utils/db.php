@@ -1,5 +1,5 @@
 <?php
-$servername = "10.2.1.15:14080";
+$servername = "10.2.1.15:3306";
 $username = "root";
 $password = "rootpassword";
 $dbname = "libriverse";
