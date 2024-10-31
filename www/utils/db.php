@@ -1,5 +1,5 @@
 <?php
-$servername = "mariadb";
+$servername = "10.2.1.15:14080";
 $username = "root";
 $password = "rootpassword";
 $dbname = "libriverse";
