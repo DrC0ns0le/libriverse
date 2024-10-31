@@ -69,19 +69,20 @@ if (!$book) {
         </div>
     </div>
 
+    <?php
+    // Calculate daily rate
+    $daily_rate = ($book['price'] * 1.5) / 30;
+    ?>
+
     <div class="rental-box">
         <h2>Rental Details</h2>
         <div class="detail-item">
-            <strong>Type:</strong> <?php echo htmlspecialchars($book['type']); ?>
-        </div>
-        <div class="detail-item">
-            <strong>Price:</strong> $<?php echo number_format($book['price'], 2); ?>
-        </div>
-        <div class="detail-item">
-            <strong>Availability:</strong> <?php echo $book['inventory'] > 0 ? 'In Stock (' . $book['inventory'] . ' available)' : 'Out of Stock'; ?>
+            <strong>Daily Rate:</strong> $<?php echo number_format($daily_rate, 2); ?>
         </div>
         <?php if ($book['inventory'] > 0): ?>
-            <button onclick="rentBook(<?php echo $book['id']; ?>)">Rent Now</button>
+            <a href="reserve.php?id=<?php echo $book['id']; ?>" class="button reserve-button">Reserve Now</a>
+        <?php else: ?>
+            <button class="button reserve-button" disabled>Not Available</button>
         <?php endif; ?>
     </div>
 
@@ -105,8 +106,7 @@ if (!$book) {
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 document.getElementById('reviews-container').innerHTML =
-                    '<p>This is a placeholder for book reviews. In a real application, ' +
-                    'you would load reviews from a database or API.</p>';
+                    '<p>WIP.</p>';
             }, 1000);
         });
     </script>
