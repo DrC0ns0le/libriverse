@@ -12,6 +12,24 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500&display=swap");
 
+.main-container {
+  width: 80%;
+  margin: auto;
+  max-width: 1200px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .main-container {
+    width: 90%;
+  }
+}
+
+.logo {
+  text-decoration: none;
+  color: inherit;
+}
+
 body {
   font-family: "IBM Plex Serif", serif;
   line-height: 1.6;
@@ -100,30 +118,34 @@ body {
 /* Book Grid Styles */
 .scroll-container {
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 10px 0;
   margin: -10px 0;
 }
 
 .book-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 30px;
+  display: flex;
+  gap: 5px;
   padding: 10px 0;
+  width: max-content;
 }
 
 .book-card {
+  margin-left: 10px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Changed to align items to the left */
+  align-items: flex-start;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.3s ease;
-  background: transparent;
-  width: 160px;
+  transition: all 0.3s ease;
+  background-color: white;
+  border-radius: 8px;
+  width: 220px;
 }
 
 .book-card:hover {
-  transform: translateY(-8px);
+  transform: scale(1.01);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .book-genre {
@@ -134,12 +156,13 @@ body {
   letter-spacing: 0.5px;
   margin-bottom: 8px;
   font-weight: 500;
-  align-self: flex-start; /* Ensures genre aligns to the left */
+  align-self: flex-start;
 }
 
 .book-image {
-  width: 100%;
-  height: 250px;
+  width: 200px;
+  height: 300px;
+  padding: 10px;
   object-fit: cover;
 }
 
@@ -167,6 +190,133 @@ body {
 
 .book-rating {
   color: #f39c12;
+  font-weight: bold;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-top: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.section-title span {
+  font-size: 1.5rem;
+  color: #333;
+  text-transform: capitalize;
+}
+
+.book-card.see-more {
+  background-color: #f0f0f0;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.see-more-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.see-more-content span {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.see-more-content .arrow {
+  font-size: 2rem;
+  margin-top: 10px;
+}
+
+.book-card.see-more:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-5px);
+}
+
+/* Search Results */
+.results-section {
+  overflow: hidden;
+  width: 100%;
+}
+
+.scroll-container.vertical-scroll {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.book-grid.vertical-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+}
+
+.book-grid.vertical-grid .book-card {
+  width: 95%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  text-decoration: none;
+  color: inherit;
+  margin: auto;
+}
+
+.book-grid.vertical-grid .book-image {
+  width: 180px;
+  height: 270px;
+  object-fit: cover;
+  margin-right: 30px;
+}
+
+.book-grid.vertical-grid .book-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-grid.vertical-grid .book-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0px;
+  color: var(--text-color);
+  word-wrap: break-word;
+}
+
+.book-grid.vertical-grid .book-author {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.book-grid.vertical-grid .book-genre {
+  color: var(--text-light);
+  margin-bottom: 0px;
+}
+
+.book-grid.vertical-grid .book-rating {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.book-grid.vertical-grid .book-description {
+  color: var(--text-light);
+  margin-top: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.book-grid.vertical-grid .book-rating {
+  color: #f39c12; /* Golden color for rating */
   font-weight: bold;
 }
 

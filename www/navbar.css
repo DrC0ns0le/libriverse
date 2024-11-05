@@ -1,0 +1,60 @@
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #007bff;
+  --text-color: #333;
+  --text-light: #666;
+  --background-color: #f8f9fa;
+  --search-background: #f5f5f5;
+  --search-border-radius: 12px;
+}
+
+.navbar {
+  padding: 1rem;
+  background: var(--background-color);
+}
+
+.navbar-container {
+  max-width: 70rem;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo-section {
+  flex: 1;
+}
+
+.navbar-logo {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+.navbar-pages {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-user-section {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+}
+
+.navbar-item {
+  text-decoration: none;
+  color: var(--text-color);
+  transition: color 0.2s;
+}
+
+.navbar-item:hover {
+  color: var(--secondary-color);
+}

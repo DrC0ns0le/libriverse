@@ -1,5 +1,6 @@
 <?php
 include 'utils/db.php';
+include 'utils/auth.php';
 
 // Get filter parameters from URL
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -10,7 +11,7 @@ $selectedAuthor = isset($_GET['author']) ? $_GET['author'] : '';
 // Function to get books based on search query and filters
 function searchBooks($conn, $query, $genre, $rating, $author, $limit = 12)
 {
-    $sql = "SELECT id, title, author, genre, ratings, image_link 
+    $sql = "SELECT id, title, author, genre, ratings, description, image_link 
             FROM catalog
             WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
 
@@ -55,7 +56,7 @@ if (!empty($search) || !empty($selectedGenre) || $selectedRating > 0 || !empty($
     $searchResults = searchBooks($conn, $search, $selectedGenre, $selectedRating, $selectedAuthor);
 }
 
-// Function to get random books with optional limit and conditions
+
 function getRandomBooks($conn, $limit = 6, $orderBy = '')
 {
     $sql = "SELECT id, title, author, genre, ratings, image_link 
@@ -73,11 +74,8 @@ function getRandomBooks($conn, $limit = 6, $orderBy = '')
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
-// Get new releases (increased limit to 6 for scrolling)
 $newReleases = getRandomBooks($conn, 6, "ORDER BY id DESC");
-
-// Get popular books (increased limit to 6 for scrolling)
-$popularBooks = getRandomBooks($conn, 6, "ORDER BY ratings DESC");
+$popularBooks = getRandomBooks($conn, 10, "ORDER BY ratings DESC");
 
 // Get top 3 genres by book count
 $genreQuery = "SELECT genre, COUNT(*) as count 
@@ -97,7 +95,7 @@ foreach ($topGenres as $genre) {
                  FROM catalog 
                  WHERE genre = '" . $conn->real_escape_string($genreName) . "'
                  ORDER BY RAND() 
-                 LIMIT 6";
+                 LIMIT 12";
     $result = $conn->query($genreSQL);
     if ($result && $result->num_rows > 0) {
         $booksByGenre[$genreName] = $result->fetch_all(MYSQLI_ASSOC);
@@ -114,113 +112,203 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discover Books - Libriverse</title>
+    <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="discover.css">
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Logo/Title Section -->
+            <div class="navbar-logo-section">
+                <a href="index.php" class="navbar-logo">Libriverse</a>
+            </div>
+
+            <!-- Pages Section -->
+            <ul class="navbar-pages">
+                <li><a href="index.php" class="navbar-item">Home</a></li>
+                <li><a href="discover.php" class="navbar-item">Discover</a></li>
+                <?php if (is_logged_in()): ?>
+                    <li><a href="bookshelf.php" class="navbar-item">Bookshelf</a></li>
+                <?php endif; ?>
+            </ul>
+
+            <!-- User Section -->
+            <div class="navbar-user-section">
+                <?php if (is_logged_in()): ?>
+                    <a href="profile.php" class="navbar-item">Profile</a>
+                    <a href="logout.php" class="navbar-item">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" class="navbar-item">Login</a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
+
 </head>
 
 <body>
-    <h1>Discover</h1>
+    <div class="main-container">
+        <a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="logo" title="Discover Books ?>">
+            <h1>Discover</h1>
+        </a>
 
-    <div class="search-container">
-        <form action="" method="GET">
-            <input type="text" name="search" class="search-input" placeholder="Search for books, authors, or genres..." value="<?php echo htmlspecialchars($search); ?>">
+        <div class="search-container">
+            <form action="" method="GET">
+                <input type="text" name="search" class="search-input" placeholder="Search for books, authors, or genres..." value="<?php echo htmlspecialchars($search); ?>">
 
-            <select name="genre">
-                <option value="">All Genres</option>
-                <?php foreach ($genres as $genre): ?>
-                    <option value="<?php echo htmlspecialchars($genre['genre']); ?>" <?php if ($selectedGenre == $genre['genre']) echo 'selected'; ?>>
-                        <?php echo htmlspecialchars($genre['genre']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+                <select name="sort" class="sort-select" onchange="sortBooks(this.value)">
+                    <option value="">Sort by</option>
+                    <option value="title_asc">Title (A-Z)</option>
+                    <option value="title_desc">Title (Z-A)</option>
+                    <option value="author_asc">Author (A-Z)</option>
+                    <option value="author_desc">Author (Z-A)</option>
+                    <option value="rating_desc">Highest Rated</option>
+                    <option value="rating_asc">Lowest Rated</option>
+                </select>
 
-            <select name="rating">
-                <option value="0">All Ratings</option>
-                <option value="4" <?php if ($selectedRating == 4) echo 'selected'; ?>>4+ Stars</option>
-                <option value="3" <?php if ($selectedRating == 3) echo 'selected'; ?>>3+ Stars</option>
-                <option value="2" <?php if ($selectedRating == 2) echo 'selected'; ?>>2+ Stars</option>
-                <option value="1" <?php if ($selectedRating == 1) echo 'selected'; ?>>1+ Stars</option>
-            </select>
-
-            <select name="author">
-                <option value="">All Authors</option>
-                <?php foreach ($authors as $author): ?>
-                    <option value="<?php echo htmlspecialchars($author['author']); ?>" <?php if ($selectedAuthor == $author['author']) echo 'selected'; ?>>
-                        <?php echo htmlspecialchars($author['author']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-
-            <button type="submit" class="search-button">Search</button>
-            <a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="clear-button">Clear Search</a>
-        </form>
-    </div>
-
-    <?php if (isset($searchResults)): ?>
-        <section class="section">
-            <div class="section-title">
-                <span>Search Results</span>
-            </div>
-            <div class="scroll-container">
-                <div class="book-grid">
-                    <?php foreach ($searchResults as $book): ?>
-                        <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
-                            <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
-                            <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
-                            <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
-                            <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
-                            <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
-                        </a>
+                <select name="genre">
+                    <option value="">All Genres</option>
+                    <?php foreach ($genres as $genre): ?>
+                        <option value="<?php echo htmlspecialchars($genre['genre']); ?>" <?php if ($selectedGenre == $genre['genre']) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($genre['genre']); ?>
+                        </option>
                     <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
+                </select>
 
-    <?php if (!isset($searchResults)): ?>
-        <section class="section">
-            <div class="section-title">
-                <span>Popular Now</span>
-                <a href="#" class="see-all">See all</a>
-            </div>
-            <div class="scroll-container">
-                <div class="book-grid">
-                    <?php foreach ($popularBooks as $book): ?>
-                        <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
-                            <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
-                            <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
-                            <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
-                            <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
-                            <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
-                        </a>
+                <select name="rating">
+                    <option value="0">All Ratings</option>
+                    <option value="4" <?php if ($selectedRating == 4) echo 'selected'; ?>>4+ Stars</option>
+                    <option value="3" <?php if ($selectedRating == 3) echo 'selected'; ?>>3+ Stars</option>
+                    <option value="2" <?php if ($selectedRating == 2) echo 'selected'; ?>>2+ Stars</option>
+                    <option value="1" <?php if ($selectedRating == 1) echo 'selected'; ?>>1+ Stars</option>
+                </select>
+
+                <select name="author">
+                    <option value="">All Authors</option>
+                    <?php foreach ($authors as $author): ?>
+                        <option value="<?php echo htmlspecialchars($author['author']); ?>" <?php if ($selectedAuthor == $author['author']) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($author['author']); ?>
+                        </option>
                     <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
+                </select>
 
-    <?php if (!isset($searchResults)): ?>
-        <?php foreach ($booksByGenre as $genre => $books): ?>
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
+
+        <?php if (isset($searchResults)): ?>
+            <section class="section results-section">
+                <div class="section-title">
+                    <span>Results</span>
+                </div>
+                <div class="scroll-container vertical-scroll">
+                    <div class="book-grid vertical-grid">
+                        <?php foreach ($searchResults as $book): ?>
+                            <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                                <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                                <div class="book-info">
+                                    <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
+                                    <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
+                                    <div class="book-author">by <?php echo htmlspecialchars($book['author']); ?></div>
+                                    <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                                    <div class="book-description"><?php echo htmlspecialchars(substr($book['description'], 0, 150)) . '...'; ?></div>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </section>
+        <?php endif; ?>
+
+        <?php if (!isset($searchResults)): ?>
             <section class="section">
                 <div class="section-title">
-                    <span><?php echo htmlspecialchars($genre); ?></span>
-                    <a href="#" class="see-all">See all</a>
+                    <span>Popular Now</span>
                 </div>
                 <div class="scroll-container">
                     <div class="book-grid">
-                        <?php foreach ($books as $book): ?>
+                        <?php foreach ($popularBooks as $book): ?>
                             <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
                                 <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                                <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
                                 <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
                                 <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
-                                <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
                                 <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
                             </a>
                         <?php endforeach; ?>
                     </div>
                 </div>
             </section>
-        <?php endforeach; ?>
-    <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (!isset($searchResults)): ?>
+            <?php foreach ($booksByGenre as $genre => $books): ?>
+                <section class="section">
+                    <div class="section-title">
+                        <span>
+                            <?php echo htmlspecialchars($genre); ?>
+                        </span>
+                        <!-- <a href="<?php echo $_SERVER['PHP_SELF'] . '?genre=' . urlencode($genre); ?>" class="see-all">See all</a> -->
+                    </div>
+                    <div class="scroll-container">
+                        <div class="book-grid">
+                            <?php foreach ($books as $book): ?>
+                                <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                                    <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                                    <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
+                                    <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
+                                    <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                                </a>
+                            <?php endforeach; ?>
+                            <a href="<?php echo $_SERVER['PHP_SELF'] . '?genre=' . urlencode($genre); ?>" class="book-card see-more">
+                                <div class="see-more-content">
+                                    <span>See More</span>
+                                    <span class="arrow">→</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 </body>
+
+<script>
+    function sortBooks(sortBy) {
+        const bookContainer = document.querySelector('.book-grid');
+        const books = Array.from(bookContainer.children);
+
+        books.sort((a, b) => {
+            let aValue, bValue;
+
+            switch (sortBy) {
+                default:
+                case 'title_asc':
+                case 'title_desc':
+                    aValue = a.querySelector('.book-title').textContent;
+                    bValue = b.querySelector('.book-title').textContent;
+                    break;
+                case 'author_asc':
+                case 'author_desc':
+                    aValue = a.querySelector('.book-author').textContent.replace('by ', '');
+                    bValue = b.querySelector('.book-author').textContent.replace('by ', '');
+                    break;
+                case 'rating_asc':
+                case 'rating_desc':
+                    aValue = parseFloat(a.querySelector('.book-rating').textContent.replace('★ ', ''));
+                    bValue = parseFloat(b.querySelector('.book-rating').textContent.replace('★ ', ''));
+                    break;
+            }
+
+            if (sortBy.endsWith('_asc')) {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        books.forEach(book => bookContainer.appendChild(book));
+    }
+</script>
 
 </html>
