@@ -125,7 +125,7 @@ $conn->close();
             <!-- Pages Section -->
             <ul class="navbar-pages">
                 <li><a href="index.php" class="navbar-item">Home</a></li>
-                <li><a href="discover.php" class="navbar-item">Discover</a></li>
+                <li><a href="discover.php" class="navbar-item" style="font-weight: bold;">Discover</a></li>
                 <?php if (is_logged_in()): ?>
                     <li><a href="bookshelf.php" class="navbar-item">Bookshelf</a></li>
                 <?php endif; ?>

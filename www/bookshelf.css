@@ -36,14 +36,6 @@
   color: inherit;
 }
 
-.book-image {
-  width: 200px;
-  height: 300px;
-  padding: 10px;
-  object-fit: cover;
-  align-self: center;
-}
-
 .book-info {
   padding: 10px;
 }
@@ -147,90 +139,126 @@
 }
 
 /* Requests section */
-.rental-list {
-  border: 1px solid #ccc;
-  padding: 1px;
+.requests-section {
+  overflow: hidden;
+  width: 100%;
 }
 
-.rental-item {
+.scroll-container.vertical-scroll {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.rental-grid.vertical-grid {
   display: flex;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.rental-card {
+  width: 97%;
+  display: flex;
+  flex-direction: row;
   align-items: flex-start;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  margin: auto;
+  background-color: white;
+  border-radius: 10px;
 }
 
-.rental-item .book-cover {
-  width: 100px;
-  height: 150px;
+.rental-card .book-image {
+  width: 120px;
+  height: 180px;
   object-fit: cover;
-  margin-right: 20px;
+  margin-right: 30px;
+  border-radius: 4px;
 }
 
-.rental-details {
+.rental-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.rental-item:last-child {
-  border-bottom: none;
+.rental-info .book-title {
+  padding-top: 8px;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--text-color);
+  word-wrap: break-word;
+}
+
+.rental-info .book-author {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
 }
 
 .status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin-top: 16px;
 }
 
 .status-badge {
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-size: 0.85rem;
-  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 5px;
 }
 
-.status-badge.requested {
-  background-color: #ffd700;
-  color: #000;
-}
-
-.status-badge.processing {
-  background-color: #87ceeb;
-  color: #000;
-}
-
-.status-badge.ready {
-  background-color: #90ee90;
-  color: #000;
-}
-
-.status-badge.returned {
-  background-color: #d3d3d3;
-  color: #000;
-}
-
-/* Action buttons */
-.button {
-  padding: 8px 12px;
-  border-radius: 3px;
-  border: none;
-  cursor: pointer;
+.return-date {
+  margin-top: 8px;
   font-size: 0.9rem;
-  text-transform: uppercase;
+  color: var(--text-light);
 }
 
-.button.view {
-  background-color: #4caf50;
+.collection-info {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.actions {
+  margin-top: 16px;
+}
+
+.rental-card .actions .button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  color: var(--primary-color);
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.8rem;
+  border: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
+}
+
+.rental-card .actions .button.cancel {
+  border-color: #982a22;
+  color: #982a22;
+}
+
+.rental-card .actions .button.cancel:hover {
+  background-color: #982a22;
   color: white;
 }
 
-.button.cancel {
-  background-color: #f44336;
+.rental-card .actions .button.review {
+  border-color: #2d7130;
+  color: #2d7130;
+}
+
+.rental-card .actions .button.review:hover {
+  background-color: #2d7130;
   color: white;
 }
 
-.button.review {
-  background-color: #2196f3;
-  color: white;
+.rental-card .actions .button:hover {
+  opacity: 0.9;
 }
 
 /* Review form */

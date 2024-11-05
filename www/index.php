@@ -28,7 +28,7 @@ $banners = $result->fetch_all(MYSQLI_ASSOC);
 
             <!-- Pages Section -->
             <ul class="navbar-pages">
-                <li><a href="index.php" class="navbar-item">Home</a></li>
+                <li><a href="index.php" class="navbar-item" style="font-weight: bold;">Home</a></li>
                 <li><a href="discover.php" class="navbar-item">Discover</a></li>
                 <?php if (is_logged_in()): ?>
                     <li><a href="bookshelf.php" class="navbar-item">Bookshelf</a></li>
