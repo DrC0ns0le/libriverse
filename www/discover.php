@@ -151,6 +151,7 @@ $conn->close();
             </select>
 
             <button type="submit" class="search-button">Search</button>
+            <a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="clear-button">Clear Search</a>
         </form>
     </div>
 
@@ -175,35 +176,15 @@ $conn->close();
         </section>
     <?php endif; ?>
 
-    <section class="section">
-        <div class="section-title">
-            <span>Popular Now</span>
-            <a href="#" class="see-all">See all</a>
-        </div>
-        <div class="scroll-container">
-            <div class="book-grid">
-                <?php foreach ($popularBooks as $book): ?>
-                    <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
-                        <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
-                        <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
-                        <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
-                        <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
-                        <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-
-    <?php foreach ($booksByGenre as $genre => $books): ?>
+    <?php if (!isset($searchResults)): ?>
         <section class="section">
             <div class="section-title">
-                <span><?php echo htmlspecialchars($genre); ?></span>
+                <span>Popular Now</span>
                 <a href="#" class="see-all">See all</a>
             </div>
             <div class="scroll-container">
                 <div class="book-grid">
-                    <?php foreach ($books as $book): ?>
+                    <?php foreach ($popularBooks as $book): ?>
                         <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
                             <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
                             <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
@@ -215,26 +196,31 @@ $conn->close();
                 </div>
             </div>
         </section>
-    <?php endforeach; ?>
+    <?php endif; ?>
 
-    <script>
-        document.querySelector('.search-input').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const bookCards = document.querySelectorAll('.book-card');
-
-            bookCards.forEach(card => {
-                const title = card.querySelector('.book-title').textContent.toLowerCase();
-                const author = card.querySelector('.book-author').textContent.toLowerCase();
-                const genre = card.querySelector('.book-genre').textContent.toLowerCase();
-
-                if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    </script>
+    <?php if (!isset($searchResults)): ?>
+        <?php foreach ($booksByGenre as $genre => $books): ?>
+            <section class="section">
+                <div class="section-title">
+                    <span><?php echo htmlspecialchars($genre); ?></span>
+                    <a href="#" class="see-all">See all</a>
+                </div>
+                <div class="scroll-container">
+                    <div class="book-grid">
+                        <?php foreach ($books as $book): ?>
+                            <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                                <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
+                                <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
+                                <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
+                                <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
+                                <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </section>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </body>
 
 </html>
