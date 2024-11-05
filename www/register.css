@@ -1,5 +1,6 @@
+/* Base Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'IBM Plex Serif', serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
@@ -9,6 +10,7 @@ body {
     height: 100vh;
 }
 
+/* Container */
 .container {
     background-color: white;
     padding: 2rem;
@@ -16,14 +18,19 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
+    box-sizing: border-box;
 }
 
+/* Headings */
 h1 {
     text-align: center;
     color: #333;
+    font-weight: 700;
+    font-size: 1.75rem;
     margin-bottom: 1.5rem;
 }
 
+/* Form Group */
 .form-group {
     margin-bottom: 1rem;
 }
@@ -32,17 +39,32 @@ label {
     display: block;
     margin-bottom: 0.5rem;
     color: #666;
+    font-weight: 500;
 }
 
+/* Input Fields */
+input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    font-family: 'IBM Plex Serif', serif;
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
+    appearance: none;
 }
 
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Button */
 .btn-register {
     width: 100%;
     padding: 0.75rem;
@@ -52,13 +74,15 @@ input[type="password"] {
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
+    font-weight: 600;
 }
 
 .btn-register:hover {
     background-color: #218838;
 }
 
+/* Error Message */
 .error {
     background-color: #f8d7da;
     color: #721c24;
@@ -68,6 +92,7 @@ input[type="password"] {
     border-radius: 4px;
 }
 
+/* Success Message */
 .success {
     background-color: #d4edda;
     color: #155724;
@@ -77,6 +102,7 @@ input[type="password"] {
     border-radius: 4px;
 }
 
+/* Login Link */
 .login-link {
     text-align: center;
     margin-top: 1rem;
@@ -85,6 +111,7 @@ input[type="password"] {
 .login-link a {
     color: #007bff;
     text-decoration: none;
+    font-weight: 500;
 }
 
 .login-link a:hover {

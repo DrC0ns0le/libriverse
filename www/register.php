@@ -12,11 +12,12 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'] ?? '';
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
 
-    if (empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
         $error = "Please fill in all fields.";
     } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match.";
@@ -32,27 +33,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result->num_rows > 0) {
             $error = "Email already exists. Please use a different email.";
         } else {
-            // Hash the password
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            // Check if username already exists
+            $stmt = $conn->prepare("SELECT id FROM user WHERE username = ?");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            // Insert new user
-            $stmt = $conn->prepare("INSERT INTO user (email, password_hash) VALUES (?, ?)");
-            $stmt->bind_param("ss", $email, $password_hash);
-
-            if ($stmt->execute()) {
-                $user_id = $stmt->insert_id;
-
-                // Start session for the new user
-                session_regenerate_id(true); // Regenerate session ID for security
-                $_SESSION['user_id'] = $user_id;
-                $_SESSION['user_email'] = $email;
-                $_SESSION['last_activity'] = time(); // Add last activity time
-
-                // Redirect to home page or dashboard
-                header("Location: index.php");
-                exit();
+            if ($result->num_rows > 0) {
+                $error = "Username already exists. Please choose a different username.";
             } else {
-                $error = "Registration failed. Please try again later.";
+                // Hash the password
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+                // Insert new user
+                $stmt = $conn->prepare("INSERT INTO user (username, email, password_hash) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $username, $email, $password_hash);
+
+                if ($stmt->execute()) {
+                    $user_id = $stmt->insert_id;
+
+                    // Start session for the new user
+                    session_regenerate_id(true); // Regenerate session ID for security
+                    $_SESSION['user_id'] = $user_id;
+                    $_SESSION['user_email'] = $email;
+                    $_SESSION['username'] = $username;
+                    $_SESSION['last_activity'] = time(); // Add last activity time
+
+                    // Redirect to home page or dashboard
+                    header("Location: index.php");
+                    exit();
+                } else {
+                    $error = "Registration failed. Please try again later.";
+                }
             }
         }
     }
@@ -79,6 +91,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
         <form action="register.php" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
