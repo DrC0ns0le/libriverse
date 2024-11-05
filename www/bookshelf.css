@@ -1,247 +1,254 @@
-/* Base styles */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+/* Bookmark Grid Styles */
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0;
+  margin: -10px 0;
 }
 
-h1 {
-    font-size: 3.5rem;
-    margin-bottom: 2rem;
-    font-family: 'Georgia', serif;
-}
-
-h2 {
-    color: #2c3e50;
-    font-size: 1.5rem;
-    border-bottom: 2px dotted #ccc;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-/* Bookmarks section */
-.bookmark-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    border: 1px solid #ccc;
-    padding: 1px;
-    margin-bottom: 3rem;
+.book-grid {
+  display: flex;
+  padding: 10px 0;
+  width: max-content;
 }
 
 .book-card {
-    border: 1px dashed #ccc;
-    aspect-ratio: 1;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 8px;
+  width: 220px;
+  margin-inline: 8px;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-.book-card.empty {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #999;
-    font-style: italic;
+.book-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.book-cover-container {
-    position: relative;
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+.book-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
 }
 
-.book-cover {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-
-.book-actions {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.book-cover-container:hover .book-actions {
-    opacity: 1;
+.book-image {
+  width: 200px;
+  height: 300px;
+  padding: 10px;
+  object-fit: cover;
+  align-self: center;
 }
 
 .book-info {
-    margin-top: 10px;
-    text-align: center;
+  padding: 10px;
 }
 
-.book-info h3 {
-    font-size: 0.9rem;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.book-title {
+  font-family: "IBM Plex Serif", serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin: 0 0 5px;
+  line-height: 1.4;
 }
 
-.book-info .author {
-    font-size: 0.8rem;
-    margin: 5px 0 0;
-    color: #666;
-}
-
-/* Button styles */
-.button {
-    padding: 8px 15px;
-    border-radius: 3px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.button.view {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.button.view:hover {
-    background-color: #45a049;
-}
-
-.button.remove {
-    background-color: #f44336;
-    color: white;
-}
-
-.button.remove:hover {
-    background-color: #da190b;
+.book-author {
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .remove-form {
-    margin: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.book-card:hover .remove-form {
+  opacity: 1;
+}
+
+.remove-button {
+  color: rgb(0, 0, 0);
+  background-color: rgb(245, 245, 245);
+  border: none;
+  border-radius: 15%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+  background-color: rgb(205, 205, 205);
+}
+
+.book-actions {
+  display: flex;
+  gap: 8px;
+  padding: 5px 10px;
+  width: 100%;
+}
+
+.action-button {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-top: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.section-title span {
+  font-size: 1.5rem;
+  color: #333;
+  text-transform: capitalize;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .book-grid {
+    gap: 15px;
+  }
+
+  .book-card {
+    width: 180px;
+  }
+
+  .book-image {
+    width: 160px;
+    height: 240px;
+  }
 }
 
 /* Requests section */
 .rental-list {
-    border: 1px solid #ccc;
-    padding: 1px;
+  border: 1px solid #ccc;
+  padding: 1px;
 }
 
 .rental-item {
-    display: flex;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    align-items: flex-start;
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  align-items: flex-start;
 }
 
 .rental-item .book-cover {
-    width: 100px; 
-    height: 150px;
-    object-fit: cover;
-    margin-right: 20px;
+  width: 100px;
+  height: 150px;
+  object-fit: cover;
+  margin-right: 20px;
 }
 
 .rental-details {
-    flex: 1;
+  flex: 1;
 }
 
 .rental-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .status-badge {
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-size: 0.85rem;
-    font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: bold;
 }
 
 .status-badge.requested {
-    background-color: #ffd700;
-    color: #000;
+  background-color: #ffd700;
+  color: #000;
 }
 
 .status-badge.processing {
-    background-color: #87ceeb;
-    color: #000;
+  background-color: #87ceeb;
+  color: #000;
 }
 
 .status-badge.ready {
-    background-color: #90ee90;
-    color: #000;
+  background-color: #90ee90;
+  color: #000;
 }
 
 .status-badge.returned {
-    background-color: #d3d3d3;
-    color: #000;
+  background-color: #d3d3d3;
+  color: #000;
 }
 
 /* Action buttons */
 .button {
-    padding: 8px 12px;
-    border-radius: 3px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
 .button.view {
-    background-color: #4CAF50;
-    color: white;
+  background-color: #4caf50;
+  color: white;
 }
 
 .button.cancel {
-    background-color: #f44336;
-    color: white;
+  background-color: #f44336;
+  color: white;
 }
 
 .button.review {
-    background-color: #2196F3;
-    color: white;
+  background-color: #2196f3;
+  color: white;
 }
 
 /* Review form */
 .review-form {
-    margin-top: 15px;
-    display: grid;
-    gap: 10px;
+  margin-top: 15px;
+  display: grid;
+  gap: 10px;
 }
 
 .review-form select,
 .review-form textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }
 
 .review-form textarea {
-    height: 80px;
-    resize: vertical;
+  height: 80px;
+  resize: vertical;
 }

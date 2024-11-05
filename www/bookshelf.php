@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'utils/db.php';
+include 'utils/auth.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -75,105 +76,121 @@ if (isset($_POST['submit_review'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookshelf - Libriverse</title>
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="bookshelf.css">
+
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Logo/Title Section -->
+            <div class="navbar-logo-section">
+                <a href="index.php" class="navbar-logo">Libriverse</a>
+            </div>
+
+            <!-- Pages Section -->
+            <ul class="navbar-pages">
+                <li><a href="index.php" class="navbar-item">Home</a></li>
+                <li><a href="discover.php" class="navbar-item">Discover</a></li>
+                <?php if (is_logged_in()): ?>
+                    <li><a href="bookshelf.php" class="navbar-item">Bookshelf</a></li>
+                <?php endif; ?>
+            </ul>
+
+            <!-- User Section -->
+            <div class="navbar-user-section">
+                <?php if (is_logged_in()): ?>
+                    <a href="profile.php" class="navbar-item">Profile</a>
+                    <a href="logout.php" class="navbar-item">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" class="navbar-item">Login</a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
 </head>
 
 <body>
-    <h1>Bookshelf</h1>
+    <div class="main-container">
+        <h1>Bookshelf</h1>
 
-    <section class="bookmarks-section">
-        <h2>Bookmarks</h2>
-        <div class="bookmark-grid">
-            <?php if (empty($bookmarks)): ?>
-                <?php for ($i = 0; $i < 7; $i++): ?>
-                    <div class="book-card empty">
-                        <p>Empty slot</p>
-                    </div>
-                <?php endfor; ?>
-            <?php else: ?>
-                <?php foreach ($bookmarks as $book): ?>
-                    <div class="book-card">
-                        <div class="book-cover-container">
-                            <img src="<?php echo htmlspecialchars($book['image_link']); ?>"
-                                alt="<?php echo htmlspecialchars($book['title']); ?>"
-                                class="book-cover">
-                            <div class="book-actions">
-                                <a href="item.php?id=<?php echo $book['id']; ?>"
-                                    class="button view">View</a>
+        <section class="section bookmarks-section">
+            <div class="section-title">
+                <span>My Bookmarks</span>
+            </div>
+            <div class="scroll-container">
+                <div class="book-grid">
+                    <?php if (!empty($bookmarks)): ?>
+                        <?php foreach ($bookmarks as $book): ?>
+                            <div class="book-card">
                                 <form method="POST" class="remove-form">
                                     <button type="submit"
                                         name="remove_bookmark"
-                                        value="<?php echo $book['bookmark_id']; ?>"
-                                        class="button remove">Remove</button>
+                                        value="<?php echo htmlspecialchars($book['bookmark_id']); ?>"
+                                        class="remove-button">&times;</button>
                                 </form>
+                                <a href="item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-link">
+                                    <img src="<?php echo htmlspecialchars($book['image_link']); ?>"
+                                        alt="<?php echo htmlspecialchars($book['title']); ?>"
+                                        class="book-image">
+                                    <div class="book-info">
+                                        <p class="book-title"><?php echo htmlspecialchars($book['title']); ?></p>
+                                        <p class="book-author">by <?php echo htmlspecialchars($book['author']); ?></p>
+                                    </div>
+                                </a>
                             </div>
-                        </div>
-                        <div class="book-info">
-                            <h3 title="<?php echo htmlspecialchars($book['title']); ?>">
-                                <?php echo htmlspecialchars($book['title']); ?>
-                            </h3>
-                            <p class="author">by <?php echo htmlspecialchars($book['author']); ?></p>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-                <?php
-                // Fill remaining slots with empty cards
-                $remaining_slots = 7 - count($bookmarks);
-                for ($i = 0; $i < $remaining_slots; $i++):
-                ?>
-                    <div class="book-card empty">
-                        <p>Empty slot</p>
-                    </div>
-                <?php endfor; ?>
-            <?php endif; ?>
-        </div>
-    </section>
-
-    <section class="requests-section">
-        <h2>Manage & Track Requests</h2>
-        <div class="rental-list">
-            <?php if (empty($rentals)): ?>
-                <div class="rental-item empty">
-                    <p>No active rental requests</p>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-            <?php else: ?>
-                <?php foreach ($rentals as $rental): ?>
-                    <div class="rental-item">
-                        <img src="<?php echo htmlspecialchars($rental['image_link']); ?>"
-                            alt="<?php echo htmlspecialchars($rental['title']); ?>"
-                            class="book-cover">
+            </div>
+        </section>
 
-                        <div class="rental-details">
-                            <h3><?php echo htmlspecialchars($rental['title']); ?></h3>
-                            <p>by <?php echo htmlspecialchars($rental['author']); ?></p>
+        <section class="requests-section">
+            <h2>Manage & Track Requests</h2>
+            <div class="rental-list">
+                <?php if (empty($rentals)): ?>
+                    <div class="rental-item empty">
+                        <p>No active rental requests</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($rentals as $rental): ?>
+                        <div class="rental-item">
+                            <img src="<?php echo htmlspecialchars($rental['image_link']); ?>"
+                                alt="<?php echo htmlspecialchars($rental['title']); ?>"
+                                class="book-cover">
 
-                            <div class="status-indicator">
-                                <span class="status-badge <?php echo strtolower($rental['status']); ?>">
-                                    <?php echo htmlspecialchars($rental['status']); ?>
-                                </span>
-                                <?php if ($rental['status'] === 'Ready'): ?>
-                                    <span>To return by <?php echo date('d/m/Y', strtotime($rental['status_last_updated'] . ' + ' . $rental['rental_duration'] . ' days')); ?></span>
+                            <div class="rental-details">
+                                <p><?php echo htmlspecialchars($rental['title']); ?></p>
+                                <p>by <?php echo htmlspecialchars($rental['author']); ?></p>
+
+                                <div class="status-indicator">
+                                    <span class="status-badge <?php echo strtolower($rental['status']); ?>">
+                                        <?php echo htmlspecialchars($rental['status']); ?>
+                                    </span>
+                                    <?php if ($rental['status'] === 'Ready'): ?>
+                                        <span>To return by <?php echo date('d/m/Y', strtotime($rental['status_last_updated'] . ' + ' . $rental['rental_duration'] . ' days')); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="actions">
+                                <?php if ($rental['status'] === 'Requested'): ?>
+                                    <form method="POST">
+                                        <button type="submit" name="cancel_request"
+                                            value="<?php echo $rental['id']; ?>"
+                                            class="button cancel">Cancel</button>
+                                    </form>
+                                <?php elseif ($rental['status'] === 'Returned'): ?>
+                                    <button class="button review"
+                                        onclick="showReviewForm(<?php echo $rental['id']; ?>)">Review</button>
                                 <?php endif; ?>
                             </div>
                         </div>
-
-                        <div class="actions">
-                            <?php if ($rental['status'] === 'Requested'): ?>
-                                <form method="POST">
-                                    <button type="submit" name="cancel_request"
-                                        value="<?php echo $rental['id']; ?>"
-                                        class="button cancel">Cancel</button>
-                                </form>
-                            <?php elseif ($rental['status'] === 'Returned'): ?>
-                                <button class="button review"
-                                    onclick="showReviewForm(<?php echo $rental['id']; ?>)">Review</button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-    </section>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </section>
+    </div>
 </body>
 
 </html>

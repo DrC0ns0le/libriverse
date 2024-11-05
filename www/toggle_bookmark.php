@@ -2,16 +2,12 @@
 session_start();
 include 'utils/db.php';
 
-header('Content-Type: application/json');
-
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in']);
-    exit;
+    die("User not logged in");
 }
 
 if (!isset($_POST['book_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Book ID not provided']);
-    exit;
+    die("Book ID not provided");
 }
 
 $user_id = $_SESSION['user_id'];
@@ -27,11 +23,13 @@ if ($result->num_rows > 0) {
     $delete_stmt = $conn->prepare("DELETE FROM bookmark WHERE user_id = ? AND catalog_id = ?");
     $delete_stmt->bind_param("ii", $user_id, $book_id);
     $success = $delete_stmt->execute();
-    echo json_encode(['success' => $success, 'bookmarked' => false]);
 } else {
     // Bookmark doesn't exist, add it
     $insert_stmt = $conn->prepare("INSERT INTO bookmark (user_id, catalog_id) VALUES (?, ?)");
     $insert_stmt->bind_param("ii", $user_id, $book_id);
     $success = $insert_stmt->execute();
-    echo json_encode(['success' => $success, 'bookmarked' => true]);
 }
+
+// Redirect back to the previous page
+header("Location: " . $_SERVER['HTTP_REFERER']);
+exit();

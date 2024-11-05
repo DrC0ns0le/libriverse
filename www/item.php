@@ -160,9 +160,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <?php if ($is_logged_in): ?>
                         <div class="rental-action-box">
                             <div class="bookmark-box">
-                                <button onclick="toggleBookmark(<?php echo $book['id']; ?>)" id="bookmarkButton">
-                                    <?php echo $is_bookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'; ?>
-                                </button>
+                                <form action="toggle_bookmark.php" method="POST">
+                                    <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
+                                    <button type="submit" id="bookmarkButton">
+                                        <?php echo $is_bookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'; ?>
+                                    </button>
+                                </form>
                             </div>
 
                             <button id="openRentalPopup" class="rental-button">Rent This Book</button>
@@ -323,35 +326,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 
     <script>
-        function toggleBookmark(bookId) {
-            fetch('toggle_bookmark.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'book_id=' + bookId
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const button = document.getElementById('bookmarkButton');
-                        if (data.bookmarked) {
-                            button.textContent = 'Remove from Bookmarks';
-                            alert('Book added to bookmarks!');
-                        } else {
-                            button.textContent = 'Add to Bookmarks';
-                            alert('Book removed from bookmarks!');
-                        }
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while updating the bookmark.');
-                });
-        }
-
         document.getElementById('duration').addEventListener('input', function() {
             // Ensure the value is between 1 and 30
             this.value = Math.max(1, Math.min(30, parseInt(this.value) || 1));
