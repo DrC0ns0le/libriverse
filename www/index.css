@@ -1,0 +1,101 @@
+/* Banner Styles */
+.banner-section {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.banner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: row;
+  background-color: #f8f8f8;
+}
+
+.banner-image {
+  width: 60%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.banner-content {
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 40px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.banner h2 {
+  font-size: 2em;
+  margin-top: 0px;
+  margin-bottom: 20px;
+  color: #333;
+  line-height: 2rem;
+}
+
+.banner p {
+  font-size: 1em;
+  color: #666;
+  line-height: 1.4rem;
+}
+
+.banner-nav {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 3;
+}
+
+.banner-nav button {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.banner-nav button:hover,
+.banner-nav button.active {
+  background: #000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .banner {
+    flex-direction: column;
+  }
+
+  .banner-image,
+  .banner-content {
+    width: 100%;
+    height: 50%;
+  }
+
+  .banner-content {
+    padding: 20px;
+  }
+
+  .banner h2 {
+    font-size: 1.5em;
+  }
+
+  .banner p {
+    font-size: 0.9em;
+  }
+
+  .banner-nav {
+    bottom: 10px;
+    right: 10px;
+  }
+}

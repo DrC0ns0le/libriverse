@@ -1,10 +1,10 @@
 <?php
 include 'utils/db.php';
-session_start();
+include 'utils/auth.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-$stmt = $conn->prepare("SELECT c.*, COUNT(r.id) as active_rentals 
+$stmt = $conn->prepare("SELECT c.*, COUNT(r.id) as active_rentals, c.description 
                         FROM catalog c 
                         LEFT JOIN request r ON c.id = r.catalog_id 
                             AND r.status IN ('Requested', 'Preparing', 'Ready', 'Collected')
@@ -79,122 +79,248 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($book['title']); ?></title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-
-<body>
-    <h1 class="book-title"><?php echo htmlspecialchars($book['title']); ?></h1>
-
-    <?php if (isset($success_message)): ?>
-        <div class="success-message"><?php echo htmlspecialchars($success_message); ?></div>
-    <?php endif; ?>
-
-    <?php if (isset($error)): ?>
-        <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
-    <?php endif; ?>
-
-    <div class="book-container">
-        <div class="cover-section">
-            <img
-                src="<?php echo htmlspecialchars($book['image_link']); ?>"
-                alt="<?php echo htmlspecialchars($book['title']); ?> cover"
-                class="cover-image">
-        </div>
-
-        <div class="details-section">
-            <div class="details-box">
-                <h2>Details</h2>
-                <div class="detail-item">
-                    <strong>Author:</strong> <?php echo htmlspecialchars($book['author']); ?>
-                </div>
-                <div class="detail-item">
-                    <strong>Publisher:</strong> <?php echo htmlspecialchars($book['publisher']); ?>
-                </div>
-                <div class="detail-item">
-                    <strong>Genre:</strong> <?php echo htmlspecialchars($book['genre']); ?>
-                </div>
-                <div class="detail-item">
-                    <strong>Language:</strong> <?php echo htmlspecialchars($book['language']); ?>
-                </div>
-                <div class="detail-item">
-                    <strong>Rating:</strong>
-                    <span class="rating-stars">
-                        <?php echo str_repeat('★', floor($book['ratings'])) . str_repeat('☆', 5 - floor($book['ratings'])); ?>
-                    </span>
-                    (<?php echo number_format($book['ratings'], 2); ?>)
-                </div>
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="item.css">
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Logo/Title Section -->
+            <div class="navbar-logo-section">
+                <a href="index.php" class="navbar-logo">Libriverse</a>
             </div>
 
-            <div class="bookmark-box">
-                <?php if ($is_logged_in): ?>
-                    <button onclick="toggleBookmark(<?php echo $book['id']; ?>)" id="bookmarkButton">
-                        <?php echo $is_bookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'; ?>
-                    </button>
+            <!-- Pages Section -->
+            <ul class="navbar-pages">
+                <li><a href="index.php" class="navbar-item">Home</a></li>
+                <li><a href="discover.php" class="navbar-item">Discover</a></li>
+                <?php if (is_logged_in()): ?>
+                    <li><a href="bookshelf.php" class="navbar-item">Bookshelf</a></li>
+                <?php endif; ?>
+            </ul>
+
+            <!-- User Section -->
+            <div class="navbar-user-section">
+                <?php if (is_logged_in()): ?>
+                    <a href="profile.php" class="navbar-item">Profile</a>
+                    <a href="logout.php" class="navbar-item">Logout</a>
                 <?php else: ?>
-                    <a href="login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="button">Login to Bookmark</a>
+                    <a href="login.php" class="navbar-item">Login</a>
                 <?php endif; ?>
             </div>
         </div>
-    </div>
+    </nav>
+</head>
 
-    <div class="rental-box">
-        <h2>Rental Details</h2>
-        <div class="detail-item">
-            <strong>Format:</strong> <?php echo htmlspecialchars($book['type']); ?>
-        </div>
-        <div class="detail-item">
-            <strong>Daily Rate:</strong> $<?php echo number_format($daily_rate, 2); ?>
-        </div>
-        <div class="detail-item">
-            <strong>Availability:</strong>
-            <?php if ($available_copies > 0): ?>
-                <?php echo $available_copies; ?> out of <?php echo $book['inventory']; ?> copies available
-            <?php else: ?>
-                Currently unavailable
-            <?php endif; ?>
-        </div>
-        <?php if ($available_copies <= 0 && $earliest_available_date): ?>
-            <div class="detail-item">
-                <strong>Earliest Available Date:</strong> <?php echo date('F j, Y', strtotime($earliest_available_date)); ?>
+<body>
+    <div class="main-container">
+        <h1 class="book-title"><?php echo htmlspecialchars($book['title']); ?></h1>
+
+        <?php if (isset($success_message)): ?>
+            <div class="success-message"><?php echo htmlspecialchars($success_message); ?></div>
+        <?php endif; ?>
+
+        <?php if (isset($error)): ?>
+            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+
+        <div class="book-container">
+            <div class="cover-section">
+                <img
+                    src="<?php echo htmlspecialchars($book['image_link']); ?>"
+                    alt="<?php echo htmlspecialchars($book['title']); ?> cover"
+                    class="cover-image">
             </div>
-        <?php endif; ?>
 
-        <?php if ($available_copies > 0): ?>
-            <form id="rentalForm" method="POST">
-                <input type="hidden" name="action" value="rent">
-                <div class="form-group">
-                    <label for="duration">Rental Duration (days):</label>
-                    <input type="number" id="duration" name="duration" min="1" max="30" required>
+            <div class="details-section">
+                <div class="details-box">
+                    <h2>Details</h2>
+                    <div class="detail-item">
+                        <strong>Author:</strong> <?php echo htmlspecialchars($book['author']); ?>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Publisher:</strong> <?php echo htmlspecialchars($book['publisher']); ?>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Genre:</strong> <?php echo htmlspecialchars($book['genre']); ?>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Language:</strong> <?php echo htmlspecialchars($book['language']); ?>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Rating:</strong>
+                        <span class="rating-stars">
+                            <?php echo str_repeat('★', floor($book['ratings'])) . str_repeat('☆', 5 - floor($book['ratings'])); ?>
+                        </span>
+                        (<?php echo number_format($book['ratings'], 2); ?>)
+                    </div>
+                    <div class="detail-item description">
+                        <strong>Description:</strong>
+                        <?php echo nl2br(htmlspecialchars($book['description'])); ?>
+                    </div>
+                    <?php if ($is_logged_in): ?>
+                        <div class="rental-action-box">
+                            <div class="bookmark-box">
+                                <button onclick="toggleBookmark(<?php echo $book['id']; ?>)" id="bookmarkButton">
+                                    <?php echo $is_bookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'; ?>
+                                </button>
+                            </div>
+
+                            <button id="openRentalPopup" class="rental-button">Rent This Book</button>
+                        </div>
+                        <div id="rentalPopup" class="popup">
+                            <div class="popup-content">
+                                <span class="close">&times;</span>
+                                <h2>Rental Details</h2>
+
+                                <div class="rental-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Format:</span>
+                                        <span class="detail-value"><?php echo htmlspecialchars(ucfirst($book['type'])); ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Daily Rate:</span>
+                                        <span class="detail-value">$<?php echo number_format($daily_rate, 2); ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Availability:</span>
+                                        <span class="detail-value">
+                                            <?php if ($available_copies > 0): ?>
+                                                <?php echo $available_copies; ?> out of <?php echo $book['inventory']; ?> copies available
+                                            <?php else: ?>
+                                                Currently unavailable
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <?php if ($available_copies > 0): ?>
+                                    <form id="rentalForm" method="POST" class="rental-form">
+                                        <input type="hidden" name="action" value="rent">
+
+                                        <div class="form-group">
+                                            <label for="duration">Rental Duration (days):</label>
+                                            <input type="number" id="duration" name="duration" min="1" max="30" required>
+                                        </div>
+
+                                        <div id="costDisplay" class="cost-display" style="display: none;">
+                                            <div class="detail-row">
+                                                <span class="detail-label">Total Cost:</span>
+                                                <span class="detail-value total-cost">$<span id="totalCost">0.00</span></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="pickup_location">Pickup Location:</label>
+                                            <select id="pickup_location" name="pickup_location" required>
+                                                <option value="">Select a pickup location</option>
+                                                <?php foreach ($pickup_locations as $location): ?>
+                                                    <option value="<?php echo $location['id']; ?>">
+                                                        <?php echo htmlspecialchars($location['library_name'] . ' - ' . $location['address']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+
+                                        <button type="submit" class="submit-button">Reserve Now</button>
+                                    </form>
+                                <?php else: ?>
+                                    <div class="availability-notice">
+                                        <p>This book is currently unavailable.</p>
+                                        <?php if ($earliest_available_date): ?>
+                                            <p>Expected to be available after:<br>
+                                                <strong><?php echo date('F j, Y', strtotime($earliest_available_date)); ?></strong>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <id="rentalPopup" class="popup">
+                            <div class="popup-content">
+                                <span class="close">&times;</span>
+                                <h2>Rental Details</h2>
+
+                                <div class="rental-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Format:</span>
+                                        <span class="detail-value"><?php echo htmlspecialchars(ucfirst($book['type'])); ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Daily Rate:</span>
+                                        <span class="detail-value">$<?php echo number_format($daily_rate, 2); ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Availability:</span>
+                                        <span class="detail-value">
+                                            <?php if ($available_copies > 0): ?>
+                                                <?php echo $available_copies; ?> out of <?php echo $book['inventory']; ?> copies available
+                                            <?php else: ?>
+                                                Currently unavailable
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <?php if ($available_copies > 0): ?>
+                                    <form id="rentalForm" method="POST" class="rental-form">
+                                        <input type="hidden" name="action" value="rent">
+
+                                        <div class="form-group">
+                                            <label for="duration">Rental Duration (days):</label>
+                                            <input type="number" id="duration" name="duration" min="1" max="30" required>
+                                        </div>
+
+                                        <div id="costDisplay" class="cost-display" style="display: none;">
+                                            <div class="detail-row">
+                                                <span class="detail-label">Total Cost:</span>
+                                                <span class="detail-value total-cost">$<span id="totalCost">0.00</span></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="pickup_location">Pickup Location:</label>
+                                            <select id="pickup_location" name="pickup_location" required>
+                                                <option value="">Select a pickup location</option>
+                                                <?php foreach ($pickup_locations as $location): ?>
+                                                    <option value="<?php echo $location['id']; ?>">
+                                                        <?php echo htmlspecialchars($location['library_name'] . ' - ' . $location['address']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+
+                                        <button type="submit" class="submit-button">Reserve Now</button>
+                                    </form>
+                                <?php else: ?>
+                                    <div class="availability-notice">
+                                        <p>This book is currently unavailable.</p>
+                                        <?php if ($earliest_available_date): ?>
+                                            <p>Expected to be available after:<br>
+                                                <strong><?php echo date('F j, Y', strtotime($earliest_available_date)); ?></strong>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <div class="login-prompt">
+                                    <button class="ask-login-button" onclick="window.location.href='login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>'">
+                                        Login to Bookmark or Rent
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                            </div>
                 </div>
 
-                <div id="costDisplay" style="display: none;">
-                    <p><strong>Total Cost:</strong> $<span id="totalCost"></span></p>
-                </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="pickup_location">Pickup Location:</label>
-                    <select id="pickup_location" name="pickup_location" required>
-                        <option value="">Select a pickup location</option>
-                        <?php foreach ($pickup_locations as $location): ?>
-                            <option value="<?php echo $location['id']; ?>">
-                                <?php echo htmlspecialchars($location['library_name'] . ' - ' . $location['address']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <button type="submit" class="button reserve-button">Reserve Now</button>
-            </form>
-        <?php else: ?>
-            <button class="button reserve-button" disabled>Not Available</button>
-            <p>You can try renting this book after <?php echo date('F j, Y', strtotime($earliest_available_date)); ?></p>
-        <?php endif; ?>
+        </div>
+        <div class="reviews-box">
+            <h2>Reviews</h2>
+            <div id="reviews-container">Loading reviews...</div>
+        </div>
     </div>
 
-    <div class="reviews-box">
-        <h2>Reviews</h2>
-        <div id="reviews-container">Loading reviews...</div>
-    </div>
 
     <script>
         function toggleBookmark(bookId) {
@@ -226,10 +352,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 });
         }
 
-        function rentBook(bookId) {
-            // Add your rental functionality here
-            alert('Rental process started!');
-        }
+        document.getElementById('duration').addEventListener('input', function() {
+            // Ensure the value is between 1 and 30
+            this.value = Math.max(1, Math.min(30, parseInt(this.value) || 1));
+
+            var duration = this.value;
+            var dailyRate = <?php echo $daily_rate; ?>;
+            var totalCost = (duration * dailyRate).toFixed(2);
+            document.getElementById('totalCost').textContent = totalCost;
+            document.getElementById('costDisplay').style.display = 'block';
+        });
 
         // Simulate loading reviews
         document.addEventListener('DOMContentLoaded', function() {
@@ -237,14 +369,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 document.getElementById('reviews-container').innerHTML =
                     '<p>WIP.</p>';
             }, 1000);
-        });
 
-        document.getElementById('duration').addEventListener('input', function() {
-            var duration = this.value;
-            var dailyRate = <?php echo $daily_rate; ?>;
-            var totalCost = (duration * dailyRate).toFixed(2);
-            document.getElementById('totalCost').textContent = totalCost;
-            document.getElementById('costDisplay').style.display = 'block';
+            const openRentalPopup = document.getElementById('openRentalPopup');
+            const rentalPopup = document.getElementById('rentalPopup');
+            const closePopup = rentalPopup.querySelector('.close');
+            const durationInput = document.getElementById('duration');
+            const costDisplay = document.getElementById('costDisplay');
+            const totalCostSpan = document.getElementById('totalCost');
+            const dailyRate = <?php echo $daily_rate; ?>;
+
+            function updateTotalCost() {
+                const duration = parseInt(durationInput.value) || 0;
+                if (duration > 0) {
+                    const totalCost = (duration * dailyRate).toFixed(2);
+                    totalCostSpan.textContent = totalCost;
+                    costDisplay.style.display = 'block';
+                } else {
+                    costDisplay.style.display = 'none';
+                }
+            }
+
+            openRentalPopup.onclick = function() {
+                rentalPopup.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+
+            closePopup.onclick = function() {
+                rentalPopup.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            window.onclick = function(event) {
+                if (event.target == rentalPopup) {
+                    rentalPopup.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+
+            durationInput.addEventListener('input', function() {
+                this.value = Math.max(1, Math.min(30, parseInt(this.value) || 1));
+                updateTotalCost();
+            });
+
+            // Form submission handling
+            const rentalForm = document.getElementById('rentalForm');
+            if (rentalForm) {
+                rentalForm.addEventListener('submit', function(e) {
+                    const duration = parseInt(durationInput.value);
+                    const pickup = document.getElementById('pickup_location').value;
+
+                    if (!duration || duration < 1 || duration > 30) {
+                        e.preventDefault();
+                        alert('Please enter a valid rental duration between 1 and 30 days.');
+                        return;
+                    }
+
+                    if (!pickup) {
+                        e.preventDefault();
+                        alert('Please select a pickup location.');
+                        return;
+                    }
+                });
+            }
         });
     </script>
 </body>

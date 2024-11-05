@@ -1,0 +1,425 @@
+/* Item Page Styles */
+
+/* Book Container Layout */
+.book-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+/* Cover Section */
+.cover-section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.cover-image:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Details Section */
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rental-box,
+.reviews-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.book-title {
+  font-family: "IBM Plex Serif", serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 24px 0;
+  line-height: 1.2;
+}
+
+h2 {
+  font-family: "IBM Plex Serif", serif;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.detail-item strong {
+  min-width: 100px;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.rating-stars {
+  color: #f39c12;
+  letter-spacing: 2px;
+}
+
+.detail-item.description {
+  margin-top: 0px;
+}
+
+.detail-item.description p {
+  margin-top: 10px;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Rental Section */
+.rental-box {
+  margin: 40px 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+#costDisplay {
+  margin: 16px 0;
+  padding: 16px;
+  background-color: var(--background-color);
+  border-radius: var(--search-border-radius);
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.details-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.rental-action-box {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.bookmark-box,
+.rental-button {
+  flex: 1;
+}
+
+.bookmark-box button,
+.rental-button {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  border: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
+}
+
+.bookmark-box button:hover,
+.rental-button:hover {
+  background-color: #f8f9fa;
+  border-color: #d1d1d1;
+}
+
+.rental-button:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #838383;
+}
+
+.rental-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Reviews Section */
+.reviews-box {
+  margin: 40px 0;
+}
+
+/* Messages */
+.success-message,
+.error-message {
+  padding: 16px;
+  border-radius: var(--search-border-radius);
+  margin-bottom: 20px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .book-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .cover-section {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .book-title {
+    font-size: 2rem;
+    margin: 16px 0;
+  }
+
+  .details-box,
+  .rental-box,
+  .reviews-box {
+    padding: 16px;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-item strong {
+    min-width: unset;
+  }
+}
+
+/* Loading State */
+#reviews-container {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "IBM Plex Sans", sans-serif;
+  color: var(--text-light);
+}
+
+/* Popup */
+.popup {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 2rem;
+  border: none;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  color: #666;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close:hover {
+  color: #333;
+}
+
+.rental-details {
+  margin-bottom: 1.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.detail-value {
+  color: #333;
+}
+
+.rental-form {
+  margin-top: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+.cost-display {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.cost-display .total-cost {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #2c5282;
+}
+
+.submit-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  border: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #f8f9fa;
+  border-color: #d1d1d1;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.availability-notice {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+button.ask-login-button {
+  margin-top: 10px;
+  background-color: #cccccc;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
+  width: 100%;
+}
+
+button.ask-login-button:hover {
+  background-color: #bbbbbb;
+  color: #555555;
+}

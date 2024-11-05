@@ -77,19 +77,18 @@ function getRandomBooks($conn, $limit = 6, $orderBy = '')
 $newReleases = getRandomBooks($conn, 6, "ORDER BY id DESC");
 $popularBooks = getRandomBooks($conn, 10, "ORDER BY ratings DESC");
 
-// Get top 3 genres by book count
-$genreQuery = "SELECT genre, COUNT(*) as count 
+// Get 3 random genres
+$genreQuery = "SELECT DISTINCT genre 
                FROM catalog 
                WHERE genre IS NOT NULL 
-               GROUP BY genre 
-               ORDER BY count DESC 
+               ORDER BY RAND() 
                LIMIT 3";
 $genreResult = $conn->query($genreQuery);
-$topGenres = $genreResult->fetch_all(MYSQLI_ASSOC);
+$randomGenres = $genreResult->fetch_all(MYSQLI_ASSOC);
 
-// Get books for each top genre
+// Get books for each random genre
 $booksByGenre = [];
-foreach ($topGenres as $genre) {
+foreach ($randomGenres as $genre) {
     $genreName = $genre['genre'];
     $genreSQL = "SELECT id, title, author, genre, ratings, image_link 
                  FROM catalog 
@@ -112,6 +111,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discover Books - Libriverse</title>
+    <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="discover.css">
 
@@ -261,8 +261,7 @@ $conn->close();
                             <?php endforeach; ?>
                             <a href="<?php echo $_SERVER['PHP_SELF'] . '?genre=' . urlencode($genre); ?>" class="book-card see-more">
                                 <div class="see-more-content">
-                                    <span>See More</span>
-                                    <span class="arrow">→</span>
+                                    <span>See More →</span>
                                 </div>
                             </a>
                         </div>
@@ -282,28 +281,28 @@ $conn->close();
             let aValue, bValue;
 
             switch (sortBy) {
-                default:
-                case 'title_asc':
                 case 'title_desc':
                     aValue = a.querySelector('.book-title').textContent;
                     bValue = b.querySelector('.book-title').textContent;
-                    break;
-                case 'author_asc':
+                    return bValue.localeCompare(aValue);
                 case 'author_desc':
                     aValue = a.querySelector('.book-author').textContent.replace('by ', '');
                     bValue = b.querySelector('.book-author').textContent.replace('by ', '');
-                    break;
-                case 'rating_asc':
+                    return bValue.localeCompare(aValue);
                 case 'rating_desc':
                     aValue = parseFloat(a.querySelector('.book-rating').textContent.replace('★ ', ''));
                     bValue = parseFloat(b.querySelector('.book-rating').textContent.replace('★ ', ''));
-                    break;
-            }
-
-            if (sortBy.endsWith('_asc')) {
-                return aValue > bValue ? 1 : -1;
-            } else {
-                return aValue < bValue ? 1 : -1;
+                    return bValue - aValue;
+                case 'rating_asc':
+                    aValue = parseFloat(a.querySelector('.book-rating').textContent.replace('★ ', ''));
+                    bValue = parseFloat(b.querySelector('.book-rating').textContent.replace('★ ', ''));
+                    return aValue - bValue;
+                case 'author_asc':
+                case 'title_asc':
+                default:
+                    aValue = (sortBy === 'author_asc' ? a.querySelector('.book-author').textContent.replace('by ', '') : a.querySelector('.book-title').textContent);
+                    bValue = (sortBy === 'author_asc' ? b.querySelector('.book-author').textContent.replace('by ', '') : b.querySelector('.book-title').textContent);
+                    return aValue.localeCompare(bValue);
             }
         });
 
