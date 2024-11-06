@@ -20,6 +20,47 @@ if (!$book) {
     exit;
 }
 
+// Fetch reviews for this book
+$review_stmt = $conn->prepare("
+    SELECT 
+        r.*,
+        COALESCE(u.username, 'Deleted User') as username,
+        COALESCE(u.first_name, '') as first_name,
+        COALESCE(u.last_name, '') as last_name
+    FROM review r 
+    LEFT JOIN user u ON r.user_id = u.id 
+    WHERE r.catalog_id = ? 
+    ORDER BY r.id DESC
+");
+$review_stmt->bind_param("i", $id);
+$review_stmt->execute();
+$reviews = $review_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+// Calculate average rating from both catalog and review table
+$avg_rating_stmt = $conn->prepare("
+    SELECT 
+        (c.ratings + COALESCE(SUM(r.rating), 0)) / (CASE WHEN c.ratings > 0 THEN 1 ELSE 0 END + COUNT(r.id)) AS avg_rating,
+        (CASE WHEN c.ratings > 0 THEN 1 ELSE 0 END + COUNT(r.id)) AS total_ratings
+    FROM 
+        catalog c
+    LEFT JOIN 
+        review r ON c.id = r.catalog_id
+    WHERE 
+        c.id = ?
+    GROUP BY
+        c.id, c.ratings
+");
+$avg_rating_stmt->bind_param("i", $id);
+$avg_rating_stmt->execute();
+$rating_result = $avg_rating_stmt->get_result()->fetch_assoc();
+
+$avg_rating = number_format($rating_result['avg_rating'], 1);
+$total_ratings = $rating_result['total_ratings'] - 1;
+
+// Update the book array with the new average rating
+$book['ratings'] = $avg_rating;
+$book['ratings_count'] = $total_ratings;
+
 $is_logged_in = isset($_SESSION['user_id']);
 $is_bookmarked = false;
 
@@ -325,7 +366,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
         <div class="reviews-box">
             <h2>Reviews</h2>
-            <div id="reviews-container">Loading reviews...</div>
+            <div class="average-rating">
+                <span class="rating-stars">
+                    <?php echo str_repeat('★', floor($avg_rating)) . str_repeat('☆', 5 - floor($avg_rating)); ?>
+                </span>
+                <span class="rating-number"><?php echo $avg_rating; ?></span>
+                <span class="total-ratings">(<?php echo $total_ratings; ?> reviews)</span>
+            </div>
+            <div id="reviews-container">
+                <?php if (empty($reviews)): ?>
+                    <p>No reviews yet. Be the first to review this book!</p>
+                <?php else: ?>
+                    <?php foreach ($reviews as $review): ?>
+                        <div class="review">
+                            <div class="review-header">
+                                <span class="review-author">
+                                    <?php
+                                    echo htmlspecialchars(
+                                        (trim($review['first_name']) && trim($review['last_name']))
+                                            ? $review['first_name'] . ' ' . $review['last_name']
+                                            : ($review['username'] !== 'Deleted User' ? $review['username'] : 'Anonymous')
+                                    );
+                                    ?>
+                                </span>
+                                <span class="review-rating">
+                                    <?php echo str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']); ?>
+                                </span>
+                            </div>
+                            <p class="review-text"><?php echo htmlspecialchars($review['review'] ?? ''); ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
@@ -344,10 +416,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         // Simulate loading reviews
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                document.getElementById('reviews-container').innerHTML =
-                    '<p>WIP.</p>';
-            }, 1000);
 
             const openRentalPopup = document.getElementById('openRentalPopup');
             const rentalPopup = document.getElementById('rentalPopup');

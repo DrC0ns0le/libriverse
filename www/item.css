@@ -193,7 +193,77 @@ h2 {
 
 /* Reviews Section */
 .reviews-box {
-  margin: 40px 0;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 40px;
+}
+
+.reviews-box h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.average-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rating-stars {
+  color: #ffd700;
+  font-size: 1.2rem;
+  margin-right: 10px;
+}
+
+.rating-number {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.total-ratings {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+#reviews-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.review {
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+  width: 100%;
+}
+
+.review:last-child {
+  border-bottom: none;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.review-author {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.review-rating {
+  color: #ffd700;
+}
+
+.review-text {
+  line-height: 1.6;
+  color: #333;
 }
 
 /* Messages */

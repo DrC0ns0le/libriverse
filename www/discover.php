@@ -7,10 +7,56 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 $selectedGenre = isset($_GET['genre']) ? $_GET['genre'] : '';
 $selectedRating = isset($_GET['rating']) ? (float)$_GET['rating'] : 0;
 $selectedAuthor = isset($_GET['author']) ? $_GET['author'] : '';
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 
-// Function to get books based on search query and filters
-function searchBooks($conn, $query, $genre, $rating, $author, $limit = 12)
+// Handle items per page selection
+$validItemsPerPage = [12, 24, 48, 96];
+$itemsPerPage = isset($_GET['items_per_page']) ? intval($_GET['items_per_page']) : 12;
+if (!in_array($itemsPerPage, $validItemsPerPage)) {
+    $itemsPerPage = 12; // Default if invalid value provided
+}
+
+// Function to get total number of results
+function getTotalResults($conn, $query, $genre, $rating, $author)
 {
+    $sql = "SELECT COUNT(*) as total 
+            FROM catalog 
+            WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
+
+    $params = ["%$query%", "%$query%", "%$query%"];
+    $types = "sss";
+
+    if (!empty($genre)) {
+        $sql .= " AND genre = ?";
+        $params[] = $genre;
+        $types .= "s";
+    }
+
+    if ($rating > 0) {
+        $sql .= " AND ratings >= ?";
+        $params[] = $rating;
+        $types .= "d";
+    }
+
+    if (!empty($author)) {
+        $sql .= " AND author = ?";
+        $params[] = $author;
+        $types .= "s";
+    }
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['total'];
+}
+
+// Function to get books based on search query and filters with pagination
+function searchBooks($conn, $query, $genre, $rating, $author, $page, $itemsPerPage)
+{
+    $offset = ($page - 1) * $itemsPerPage;
+
     $sql = "SELECT id, title, author, genre, ratings, description, image_link 
             FROM catalog
             WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
@@ -36,9 +82,10 @@ function searchBooks($conn, $query, $genre, $rating, $author, $limit = 12)
         $types .= "s";
     }
 
-    $sql .= " ORDER BY RAND() LIMIT ?";
-    $params[] = $limit;
-    $types .= "i";
+    $sql .= " ORDER BY title ASC LIMIT ? OFFSET ?";
+    $params[] = $itemsPerPage;
+    $params[] = $offset;
+    $types .= "ii";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param($types, ...$params);
@@ -53,7 +100,9 @@ $authors = $conn->query("SELECT DISTINCT author FROM catalog WHERE author IS NOT
 
 // If there's a search query or filters are set, use them to find books
 if (!empty($search) || !empty($selectedGenre) || $selectedRating > 0 || !empty($selectedAuthor)) {
-    $searchResults = searchBooks($conn, $search, $selectedGenre, $selectedRating, $selectedAuthor);
+    $totalResults = getTotalResults($conn, $search, $selectedGenre, $selectedRating, $selectedAuthor);
+    $totalPages = ceil($totalResults / $itemsPerPage);
+    $searchResults = searchBooks($conn, $search, $selectedGenre, $selectedRating, $selectedAuthor, $page, $itemsPerPage);
 }
 
 
@@ -153,54 +202,70 @@ $conn->close();
         </a>
 
         <div class="search-container">
-            <form action="" method="GET">
+            <form action="" method="GET" id="searchForm">
                 <input type="text" name="search" class="search-input" placeholder="Search for books, authors, or genres..." value="<?php echo htmlspecialchars($search); ?>">
 
-                <select name="sort" class="sort-select" onchange="sortBooks(this.value)">
-                    <option value="">Sort by</option>
-                    <option value="title_asc">Title (A-Z)</option>
-                    <option value="title_desc">Title (Z-A)</option>
-                    <option value="author_asc">Author (A-Z)</option>
-                    <option value="author_desc">Author (Z-A)</option>
-                    <option value="rating_desc">Highest Rated</option>
-                    <option value="rating_asc">Lowest Rated</option>
-                </select>
+                <div class="filter-row">
+                    <select name="sort" class="sort-select" onchange="sortBooks(this.value)">
+                        <option value="">Sort by</option>
+                        <option value="title_asc">Title (A-Z)</option>
+                        <option value="title_desc">Title (Z-A)</option>
+                        <option value="author_asc">Author (A-Z)</option>
+                        <option value="author_desc">Author (Z-A)</option>
+                        <option value="rating_desc">Highest Rated</option>
+                        <option value="rating_asc">Lowest Rated</option>
+                    </select>
 
-                <select name="genre">
-                    <option value="">All Genres</option>
-                    <?php foreach ($genres as $genre): ?>
-                        <option value="<?php echo htmlspecialchars($genre['genre']); ?>" <?php if ($selectedGenre == $genre['genre']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($genre['genre']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                    <select name="genre">
+                        <option value="">All Genres</option>
+                        <?php foreach ($genres as $genre): ?>
+                            <option value="<?php echo htmlspecialchars($genre['genre']); ?>" <?php if ($selectedGenre == $genre['genre']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($genre['genre']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
 
-                <select name="rating">
-                    <option value="0">All Ratings</option>
-                    <option value="4" <?php if ($selectedRating == 4) echo 'selected'; ?>>4+ Stars</option>
-                    <option value="3" <?php if ($selectedRating == 3) echo 'selected'; ?>>3+ Stars</option>
-                    <option value="2" <?php if ($selectedRating == 2) echo 'selected'; ?>>2+ Stars</option>
-                    <option value="1" <?php if ($selectedRating == 1) echo 'selected'; ?>>1+ Stars</option>
-                </select>
+                    <select name="rating">
+                        <option value="0">All Ratings</option>
+                        <option value="4" <?php if ($selectedRating == 4) echo 'selected'; ?>>4+ Stars</option>
+                        <option value="3" <?php if ($selectedRating == 3) echo 'selected'; ?>>3+ Stars</option>
+                        <option value="2" <?php if ($selectedRating == 2) echo 'selected'; ?>>2+ Stars</option>
+                        <option value="1" <?php if ($selectedRating == 1) echo 'selected'; ?>>1+ Stars</option>
+                    </select>
 
-                <select name="author">
-                    <option value="">All Authors</option>
-                    <?php foreach ($authors as $author): ?>
-                        <option value="<?php echo htmlspecialchars($author['author']); ?>" <?php if ($selectedAuthor == $author['author']) echo 'selected'; ?>>
-                            <?php echo htmlspecialchars($author['author']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                    <select name="author">
+                        <option value="">All Authors</option>
+                        <?php foreach ($authors as $author): ?>
+                            <option value="<?php echo htmlspecialchars($author['author']); ?>" <?php if ($selectedAuthor == $author['author']) echo 'selected'; ?>>
+                                <?php echo htmlspecialchars($author['author']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
 
-                <button type="submit" class="search-button">Search</button>
+                    <select name="items_per_page" class="items-per-page" onchange="this.form.submit()">
+                        <?php foreach ($validItemsPerPage as $value): ?>
+                            <option value="<?php echo $value; ?>" <?php if ($itemsPerPage == $value) echo 'selected'; ?>>
+                                <?php echo $value; ?> per page
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <button type="submit" class="search-button">Search</button>
+                </div>
             </form>
         </div>
 
         <?php if (isset($searchResults)): ?>
             <section class="section results-section">
-                <div class="section-title">
-                    <span>Results</span>
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Results (<?php echo $totalResults; ?> books found)</span>
+                    </div>
+                    <div class="results-info">
+                        Showing <?php echo min(($page - 1) * $itemsPerPage + 1, $totalResults); ?>-<?php echo min($page * $itemsPerPage, $totalResults); ?> of <?php echo $totalResults; ?>
+                    </div>
                 </div>
+
                 <div class="scroll-container vertical-scroll">
                     <div class="book-grid vertical-grid">
                         <?php foreach ($searchResults as $book): ?>
@@ -216,6 +281,34 @@ $conn->close();
                             </a>
                         <?php endforeach; ?>
                     </div>
+
+                    <?php if ($totalPages > 1): ?>
+                        <div class="pagination">
+                            <?php if ($page > 1): ?>
+                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="page-link">&laquo; Previous</a>
+                            <?php endif; ?>
+
+                            <?php
+                            // Show page numbers with ellipsis
+                            $range = 2;
+                            for ($i = 1; $i <= $totalPages; $i++) {
+                                if ($i == 1 || $i == $totalPages || ($i >= $page - $range && $i <= $page + $range)) {
+                                    if ($i == $page) {
+                                        echo "<span class='page-link active'>$i</span>";
+                                    } else {
+                                        echo "<a href='?" . http_build_query(array_merge($_GET, ['page' => $i])) . "' class='page-link'>$i</a>";
+                                    }
+                                } elseif ($i == $page - $range - 1 || $i == $page + $range + 1) {
+                                    echo "<span class='page-ellipsis'>...</span>";
+                                }
+                            }
+                            ?>
+
+                            <?php if ($page < $totalPages): ?>
+                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="page-link">Next &raquo;</a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </section>
         <?php endif; ?>
