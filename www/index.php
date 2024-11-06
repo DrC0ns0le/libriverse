@@ -38,6 +38,7 @@ $banners = $result->fetch_all(MYSQLI_ASSOC);
             <!-- User Section -->
             <div class="navbar-user-section">
                 <?php if (is_logged_in()): ?>
+                    <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'null'); ?></span>
                     <a href="profile.php" class="navbar-item">Profile</a>
                     <a href="logout.php" class="navbar-item">Logout</a>
                 <?php else: ?>

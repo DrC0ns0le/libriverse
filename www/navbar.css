@@ -48,3 +48,9 @@
 .navbar-item:hover {
   font-weight: bold;
 }
+
+.navbar-username {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #333; /* Adjust color as needed */
+}
