@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'utils/db.php';
 include 'utils/auth.php';
 
@@ -22,12 +21,14 @@ $bookmark_stmt->bind_param("i", $user_id);
 $bookmark_stmt->execute();
 $bookmarks = $bookmark_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Fetch rental requests
+// Fetch rental requests with review data
 $rental_stmt = $conn->prepare("
-    SELECT r.*, c.title, c.author, c.image_link, pl.library_name, pl.address
+    SELECT r.*, c.title, c.author, c.image_link, pl.library_name, pl.address,
+           rv.id as review_id, rv.rating, rv.review as comment
     FROM request r 
     JOIN catalog c ON r.catalog_id = c.id 
     LEFT JOIN pickup_location pl ON r.pickup_location_id = pl.id
+    LEFT JOIN review rv ON rv.user_id = r.user_id AND rv.catalog_id = r.catalog_id
     WHERE r.user_id = ? 
     ORDER BY r.status_last_updated DESC
 ");
@@ -55,18 +56,43 @@ if (isset($_POST['cancel_request'])) {
     exit;
 }
 
-// Handle review submission
+// Handle review submission/update
 if (isset($_POST['submit_review'])) {
     $request_id = intval($_POST['request_id']);
     $rating = intval($_POST['rating']);
-    $comment = $_POST['comment'];
-    $review_stmt = $conn->prepare("INSERT INTO review (user_id, catalog_id, rating, comment) SELECT user_id, catalog_id, ?, ? FROM request WHERE id = ? AND user_id = ?");
-    $review_stmt->bind_param("isii", $rating, $comment, $request_id, $user_id);
-    $review_stmt->execute();
+    $review_text = $_POST['comment'];
+
+    // Check if review exists
+    $check_review_stmt = $conn->prepare("
+        SELECT id FROM review 
+        WHERE user_id = ? AND catalog_id = (SELECT catalog_id FROM request WHERE id = ?)
+    ");
+    $check_review_stmt->bind_param("ii", $user_id, $request_id);
+    $check_review_stmt->execute();
+    $existing_review = $check_review_stmt->get_result()->fetch_assoc();
+
+    if ($existing_review) {
+        // Update existing review
+        $update_stmt = $conn->prepare("
+            UPDATE review 
+            SET rating = ?, review = ? 
+            WHERE id = ?
+        ");
+        $update_stmt->bind_param("isi", $rating, $review_text, $existing_review['id']);
+        $update_stmt->execute();
+    } else {
+        // Insert new review
+        $review_stmt = $conn->prepare("
+            INSERT INTO review (user_id, catalog_id, rating, review) 
+            SELECT user_id, catalog_id, ?, ? FROM request WHERE id = ? AND user_id = ?
+        ");
+        $review_stmt->bind_param("isii", $rating, $review_text, $request_id, $user_id);
+        $review_stmt->execute();
+    }
+
     header('Location: bookshelf.php');
     exit;
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -225,8 +251,17 @@ if (isset($_POST['submit_review'])) {
                                             ?>
                                                 <div class="actions">
                                                     <button class="button review"
-                                                        onclick="showReviewForm(<?php echo $rental['id']; ?>)">
-                                                        Review
+                                                        onclick="showReviewForm(<?php echo $rental['id']; ?>, <?php
+                                                                                                                echo htmlspecialchars(
+                                                                                                                    json_encode([
+                                                                                                                        'rating' => $rental['rating'],
+                                                                                                                        'comment' => $rental['comment'],
+                                                                                                                        'isEdit' => !is_null($rental['review_id'])
+                                                                                                                    ]),
+                                                                                                                    ENT_QUOTES
+                                                                                                                );
+                                                                                                                ?>)">
+                                                        <?php echo !is_null($rental['review_id']) ? 'Edit Review' : 'Review'; ?>
                                                     </button>
                                                 </div>
                                         <?php
@@ -242,6 +277,119 @@ if (isset($_POST['submit_review'])) {
             </div>
         </section>
     </div>
+
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="reviewModalTitle">Write a Review</h2>
+            <form id="reviewForm" method="POST">
+                <input type="hidden" name="submit_review" value="1">
+                <input type="hidden" id="requestId" name="request_id" value="">
+
+                <label for="rating">How would you rate this book?</label>
+                <div class="rating-container">
+                    <div class="stars">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1">★</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">What do you think about this book?</label>
+                    <textarea id="comment" name="comment" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-review">Submit Review</button>
+            </form>
+        </div>
+    </div>
 </body>
+
+<script>
+    // Get modal elements
+    const modal = document.getElementById('reviewModal');
+    const closeBtn = document.getElementsByClassName('close')[0];
+    const modalTitle = document.getElementById('reviewModalTitle');
+    const commentField = document.getElementById('comment');
+    let currentRequestId = null;
+
+    // Show review modal function
+    function showReviewForm(requestId, reviewData = null) {
+        currentRequestId = requestId;
+        document.getElementById('requestId').value = requestId;
+
+        // Reset form first
+        resetForm();
+
+        if (reviewData && reviewData.isEdit) {
+            modalTitle.textContent = 'Edit Your Review';
+
+            // Set the rating
+            if (reviewData.rating) {
+                const ratingInput = document.querySelector(`input[name="rating"][value="${reviewData.rating}"]`);
+                if (ratingInput) {
+                    ratingInput.checked = true;
+                }
+            }
+
+            // Set the comment
+            if (reviewData.comment) {
+                commentField.value = reviewData.comment;
+            }
+        } else {
+            modalTitle.textContent = 'Write a Review';
+        }
+
+        modal.style.display = 'block';
+    }
+
+    // Close modal when clicking (X)
+    closeBtn.onclick = function() {
+        modal.style.display = 'none';
+        resetForm();
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+            resetForm();
+        }
+    }
+
+    // Reset form function
+    function resetForm() {
+        document.getElementById('reviewForm').reset();
+        currentRequestId = null;
+    }
+
+    // Form validation
+    document.getElementById('reviewForm').onsubmit = function(e) {
+        const rating = document.querySelector('input[name="rating"]:checked');
+        const comment = document.getElementById('comment').value.trim();
+
+        if (!rating) {
+            e.preventDefault();
+            alert('Please select a rating');
+            return false;
+        }
+
+        if (!comment) {
+            e.preventDefault();
+            alert('Please write a review');
+            return false;
+        }
+
+        return true;
+    }
+</script>
 
 </html>
