@@ -17,36 +17,9 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Header */
-h1 {
-  text-align: center;
-  color: #333;
-  font-family: "IBM Plex Serif", serif;
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-}
-
-/* Navigation Links */
-nav {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: #007bff;
-  font-weight: 500;
-  font-size: 1.1rem;
-  transition: color 0.2s;
-}
-
-nav a:hover {
-  color: #0056b3;
-}
-
 /* Success and Error Messages */
-.success, .error {
+.success,
+.error {
   padding: 15px;
   margin-bottom: 30px;
   border-radius: 8px;
@@ -79,7 +52,9 @@ label {
 }
 
 /* Input Fields */
-input[type="email"], select {
+input[type="email"],
+input[type="text"],
+select {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
@@ -90,7 +65,9 @@ input[type="email"], select {
   transition: border-color 0.2s;
 }
 
-input[type="email"]:focus, select:focus {
+input[type="email"]:focus,
+input[type="text"]:focus,
+select:focus {
   border-color: #007bff;
 }
 

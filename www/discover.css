@@ -105,7 +105,7 @@
 }
 
 .book-card:hover {
-  transform: scale(1.01);
+  transform: scale(1.005);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -198,7 +198,7 @@
 
 .book-card.see-more:hover {
   background-color: #f0f0f0;
-  transform: scale(1.01);
+  transform: scale(1.005);
 }
 
 /* Search Results */
@@ -225,7 +225,6 @@
   flex-direction: row;
   align-items: flex-start;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
   text-decoration: none;
   color: inherit;
   margin: auto;

@@ -12,16 +12,16 @@ $error = '';
 $redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'] ?? '';
+    $login = $_POST['login'] ?? '';
     $password = $_POST['password'] ?? '';
     $redirect_to = $_POST['redirect'] ?? 'index.php';
 
-    if (empty($email) || empty($password)) {
-        $error = "Please enter both email and password.";
+    if (empty($login) || empty($password)) {
+        $error = "Please enter both email/username and password.";
     } else {
         // Prepare SQL statement to prevent SQL injection
-        $stmt = $conn->prepare("SELECT id, email, password_hash FROM user WHERE email = ?");
-        $stmt->bind_param("s", $email);
+        $stmt = $conn->prepare("SELECT id, email, username, password_hash FROM user WHERE email = ? OR username = ?");
+        $stmt->bind_param("ss", $login, $login);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -32,16 +32,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 session_regenerate_id(true); // Regenerate session ID for security
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_email'] = $user['email'];
+                $_SESSION['username'] = $user['username'];
                 $_SESSION['last_activity'] = time(); // Add last activity time
 
                 // Redirect to the original page or home page
                 header("Location: " . $redirect_to);
                 exit();
             } else {
-                $error = "Invalid email or password.";
+                $error = "Invalid email/username or password.";
             }
         } else {
-            $error = "Invalid email or password.";
+            $error = "Invalid email/username or password.";
         }
     }
 }
@@ -59,12 +60,13 @@ if (isset($_GET['logout'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Libriverse</title>
+    <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="login.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>Login to Libriverse</h1>
+    <div class="login-container">
+        <h1>Login with your Account</h1>
         <?php if (!empty($message)): ?>
             <div class="success"><?php echo htmlspecialchars($message); ?></div>
         <?php endif; ?>
@@ -72,19 +74,40 @@ if (isset($_GET['logout'])) {
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         <form action="login.php" method="post">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+            <div class="details-container">
+                <div class="form-group">
+                    <label for="login">Email or Username:</label>
+                    <input type="text" id="login" name="login" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required>
+                        <button type="button" id="togglePassword" class="toggle-password">Show</button>
+                    </div>
+                </div>
+                <div class="btn-container">
+
+                    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect_to); ?>">
+                    <button type="submit" class="btn-login">Login</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect_to); ?>">
-            <button type="submit" class="btn-login">Login</button>
+            <p class="register-link">Don't have an account? <a href="register.php">Register here</a></p>
         </form>
-        <p class="register-link">Don't have an account? <a href="register.php">Register here</a></p>
     </div>
 </body>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            this.textContent = 'Hide';
+        } else {
+            passwordInput.type = 'password';
+            this.textContent = 'Show';
+        }
+    });
+</script>
 
 </html>

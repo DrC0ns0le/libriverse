@@ -162,36 +162,77 @@ if (isset($_POST['submit_review'])) {
                                     alt="<?php echo htmlspecialchars($rental['title']); ?>"
                                     class="book-image">
                                 <div class="rental-info">
-                                    <div class="book-title"><?php echo htmlspecialchars($rental['title']); ?></div>
-                                    <div class="book-author">by <?php echo htmlspecialchars($rental['author']); ?></div>
+                                    <a href="item.php?id=<?php echo htmlspecialchars($rental['catalog_id']); ?>">
+                                        <div class="book-title"><?php echo htmlspecialchars($rental['title']); ?></div>
+                                        <div class="book-author">by <?php echo htmlspecialchars($rental['author']); ?></div>
+                                    </a>
                                     <div class="status-indicator">
                                         <span class="status-badge <?php echo strtolower($rental['status']); ?>">
                                             Status: <?php echo htmlspecialchars($rental['status']); ?>
                                         </span>
-                                        <?php if ($rental['status'] === 'Collected'): ?>
-                                            <div class="return-date">To return by <?php echo date('d/m/Y', strtotime($rental['status_last_updated'] . ' + ' . $rental['rental_duration'] . ' days')); ?></div>
-                                        <?php endif; ?>
-                                        <?php if ($rental['status'] === 'Ready'): ?>
-                                            <div class="collection-info">Your book is ready for collection at <strong><?php echo htmlspecialchars($rental['library_name']); ?></strong>.
-                                                </br>Full Address: <?php echo htmlspecialchars($rental['address']); ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
 
-                                    <?php if ($rental['status'] === 'Requested'): ?>
-                                        <div class="actions">
-                                            <form method="POST">
-                                                <button type="submit" name="cancel_request"
-                                                    value="<?php echo $rental['id']; ?>"
-                                                    class="button cancel">Cancel</button>
-                                            </form>
-                                        </div>
-                                    <?php elseif ($rental['status'] === 'Returned'): ?>
-                                        <div class="actions">
-                                            <button class="button review"
-                                                onclick="showReviewForm(<?php echo $rental['id']; ?>)">Review</button>
-                                        </div>
-                                    <?php endif; ?>
+                                        <?php
+                                        switch ($rental['status']) {
+                                            case 'Collected':
+                                        ?>
+                                                <div class="return-date">
+                                                    <?php
+                                                    $return_date = strtotime($rental['status_last_updated'] . ' + ' . $rental['rental_duration'] . ' days');
+                                                    $current_date = time();
+                                                    $days_diff = round(($return_date - $current_date) / (60 * 60 * 24));
+
+                                                    if ($days_diff > 0) {
+                                                        echo "Return in " . $days_diff . " day" . ($days_diff != 1 ? "s" : "") . " (by " . date('d/m/Y', $return_date) . ")";
+                                                    } elseif ($days_diff == 0) {
+                                                        echo "<span class='due-today'>Due today!</span>";
+                                                    } else {
+                                                        $overdue_days = abs($days_diff);
+                                                        echo "<span class='overdue'>Overdue by " . $overdue_days . " day" . ($overdue_days != 1 ? "s" : "") . "</span>";
+                                                    }
+                                                    ?>
+                                                </div>
+                                            <?php
+                                                break;
+
+                                            case 'Ready':
+                                            ?>
+                                                <div class="collection-info">
+                                                    Your book is ready for collection at
+                                                    <strong><?php echo htmlspecialchars($rental['library_name']); ?></strong>
+                                                    <br>
+                                                    Full Address: <?php echo htmlspecialchars($rental['address']); ?>
+                                                </div>
+                                            <?php
+                                                break;
+
+                                            case 'Requested':
+                                            ?>
+                                                <div class="actions">
+                                                    <form method="POST">
+                                                        <button type="submit"
+                                                            name="cancel_request"
+                                                            value="<?php echo $rental['id']; ?>"
+                                                            class="button cancel">
+                                                            Cancel
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            <?php
+                                                break;
+
+                                            case 'Returned':
+                                            ?>
+                                                <div class="actions">
+                                                    <button class="button review"
+                                                        onclick="showReviewForm(<?php echo $rental['id']; ?>)">
+                                                        Review
+                                                    </button>
+                                                </div>
+                                        <?php
+                                                break;
+                                        }
+                                        ?>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>

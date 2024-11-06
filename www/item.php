@@ -305,14 +305,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                         <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
-                            <?php else: ?>
+
+                            </div>
+                        <?php else: ?>
+
+                            <div class="rental-action-box">
                                 <div class="login-prompt">
                                     <button class="ask-login-button" onclick="window.location.href='login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>'">
                                         Login to Bookmark or Rent
                                     </button>
                                 </div>
-                            <?php endif; ?>
                             </div>
+
+                        <?php endif; ?>
                 </div>
 
             </div>

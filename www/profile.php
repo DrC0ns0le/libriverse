@@ -47,12 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile - Libriverse</title>
     <link rel="stylesheet" href="profile.css">
 </head>
+
 <body>
     <div class="container">
         <h1>User Profile</h1>
@@ -70,14 +72,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <div class="profile-card">
             <div class="username-display">
-                <h2><?php echo htmlspecialchars($user['username']); ?></h2>
+                <h2><?php echo htmlspecialchars($user['username'] ?? ''); ?></h2>
             </div>
             <form action="profile.php" method="post">
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    <span id="email-error" class="error-message"></span>
                 </div>
-                    <div class="form-group">
+                <div class="form-group">
                     <label for="first_name">First Name:</label>
                     <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>" required>
                 </div>
@@ -99,4 +102,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 </body>
+
+<script>
+    document.getElementById('email').addEventListener('input', function(e) {
+        var email = e.target.value;
+        var emailError = document.getElementById('email-error');
+        var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(email)) {
+            emailError.textContent = 'Please enter a valid email address.';
+        } else {
+            emailError.textContent = '';
+        }
+    });
+</script>
+
+
 </html>

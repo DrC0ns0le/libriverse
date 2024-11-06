@@ -22,11 +22,19 @@
   margin-inline: 8px;
   transition: all 0.3s ease;
   overflow: hidden;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
 .book-card:hover {
-  transform: scale(1.01);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.005);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.book-card .book-image {
+  width: 220px;
+  height: 350px;
+  object-fit: cover;
+  margin-right: 30px;
 }
 
 .book-link {
@@ -45,7 +53,7 @@
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--text-color);
-  margin: 0 0 5px;
+  text-decoration: none;
   line-height: 1.4;
 }
 
@@ -157,20 +165,26 @@
 }
 
 .rental-card {
-  width: 97%;
+  width: 95%;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 16px;
-  border-bottom: 1px solid #e0e0e0;
   margin: auto;
   background-color: white;
   border-radius: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+.rental-card:hover {
+  transform: scale(1.005);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 }
 
 .rental-card .book-image {
-  width: 120px;
-  height: 180px;
+  width: 130px;
+  height: 200px;
   object-fit: cover;
   margin-right: 30px;
   border-radius: 4px;
@@ -182,8 +196,15 @@
   flex-direction: column;
 }
 
+.rental-info a {
+  padding: 0px;
+  margin: 0px;
+  text-decoration: none;
+  color: inherit;
+}
+
 .rental-info .book-title {
-  padding-top: 8px;
+  padding-top: 0px;
   font-size: 2rem;
   font-weight: bold;
   margin: 0;

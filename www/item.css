@@ -28,7 +28,7 @@
 }
 
 .cover-image:hover {
-  transform: scale(1.01);
+  transform: scale(1.005);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -408,18 +408,21 @@ h2 {
 }
 
 button.ask-login-button {
-  margin-top: 10px;
-  background-color: #cccccc;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s, color 0.3s;
   width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  border: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
 }
 
 button.ask-login-button:hover {
-  background-color: #bbbbbb;
-  color: #555555;
+  background-color: #f8f9fa;
+  border-color: #d1d1d1;
 }

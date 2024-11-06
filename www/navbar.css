@@ -42,9 +42,9 @@
 .navbar-item {
   text-decoration: none;
   color: var(--text-color);
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .navbar-item:hover {
-  color: var(--secondary-color);
+  font-weight: bold;
 }
