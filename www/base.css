@@ -64,3 +64,118 @@ h3 {
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
 }
+
+/* Base Input Styling */
+input[type="text"],
+input[type="number"],
+textarea {
+  padding: 12px 24px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  font-size: 0.95rem;
+  font-family: "IBM Plex Sans", sans-serif;
+  transition: all 0.2s ease;
+  appearance: none;
+}
+
+select {
+  padding: 12px 24px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  font-size: 0.95rem;
+  font-family: "IBM Plex Sans", sans-serif;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 38px;
+}
+
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+input[type="text"]:hover,
+select:hover {
+  border-color: #838383;
+}
+
+input[type="submit"],
+input[type="reset"],
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  border: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
+}
+
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+button:hover {
+  background-color: #f8f9fa;
+  border-color: #838383;
+}
+
+input[type="file"] {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  padding: 12px 24px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+input[type="file"] {
+  width: 100%;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  padding: 12px 24px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+input[type="file"]::file-selector-button {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 12px 24px;
+  margin-right: 16px;
+  margin-left: -24px;
+  border: none;
+  border-right: 1px solid #e1e1e1;
+  background-color: #f8f9fa;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 100%;
+  align-self: stretch;
+  margin-top: -12px;
+  margin-bottom: -12px;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #e9ecef;
+}

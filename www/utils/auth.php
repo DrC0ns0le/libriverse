@@ -12,7 +12,7 @@ function require_login()
 {
     if (!is_logged_in()) {
         $current_page = urlencode($_SERVER['REQUEST_URI']);
-        header("Location: login.php?must=1&redirect=$current_page");
+        header("Location: /login.php?must=1&redirect=$current_page");
         exit();
     }
 }
@@ -24,7 +24,7 @@ function check_session_timeout($timeout = 1800)
         session_unset();
         session_destroy();
         $current_page = urlencode($_SERVER['REQUEST_URI']);
-        header("Location: login.php?expired=1&redirect=$current_page");
+        header("Location: /login.php?expired=1&redirect=$current_page");
         exit();
     }
     // Update last activity time stamp
@@ -43,7 +43,7 @@ function init_admin_session()
     init_authenticated_session();
 
     if ($_SESSION['role'] != 'admin') {
-        header("Location: unauthorised.php");
+        header("Location: /unauthorised.php");
         exit();
     }
 }
@@ -71,6 +71,6 @@ function logout()
     session_destroy();
 
     // Redirect to the login page
-    header("Location: login.php?logout=1");
+    header("Location: /login.php?logout=1");
     exit();
 }
