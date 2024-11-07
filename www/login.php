@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Please enter both email/username and password.";
     } else {
         // Prepare SQL statement to prevent SQL injection
-        $stmt = $conn->prepare("SELECT id, email, username, password_hash FROM user WHERE email = ? OR username = ?");
+        $stmt = $conn->prepare("SELECT id, email, username, password_hash, first_name, last_name, role FROM user WHERE email = ? OR username = ?");
         $stmt->bind_param("ss", $login, $login);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -34,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['last_activity'] = time(); // Add last activity time
+                $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['last_name'] = $user['last_name'];
+                $_SESSION['role'] = $user['role'];
 
                 // Redirect to the original page or home page
                 header("Location: " . $redirect_to);
@@ -48,8 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $message = '';
+if (isset($_GET['must']) && $_GET['must'] == 1) {
+    $message = "You must be logged in to access this page.";
+}
 if (isset($_GET['logout'])) {
     $message = "You have been successfully logged out.";
+}
+if (isset($_GET['expired']) && $_GET['expired'] == 1) {
+    $message = "Your session has expired. Please log in again.";
 }
 ?>
 

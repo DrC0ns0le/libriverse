@@ -12,7 +12,7 @@ function require_login()
 {
     if (!is_logged_in()) {
         $current_page = urlencode($_SERVER['REQUEST_URI']);
-        header("Location: login.php?redirect=$current_page");
+        header("Location: login.php?must=1&redirect=$current_page");
         exit();
     }
 }
@@ -31,11 +31,21 @@ function check_session_timeout($timeout = 1800)
     $_SESSION['last_activity'] = time();
 }
 
-// Call this function at the beginning of pages that require login
+// Call function at the beginning of pages that require login
 function init_authenticated_session()
 {
     require_login();
     check_session_timeout();
+}
+
+function init_admin_session()
+{
+    init_authenticated_session();
+
+    if ($_SESSION['role'] != 'admin') {
+        header("Location: unauthorised.php");
+        exit();
+    }
 }
 
 function logout()

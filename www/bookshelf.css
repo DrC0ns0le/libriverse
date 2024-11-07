@@ -1,4 +1,25 @@
 /* Bookmark Grid Styles */
+
+.no-bookmarks-message {
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: var(--text-color);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 20px 0;
+  border: 1px solid #e1e1e1;
+}
+
+.no-bookmarks-message a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
 .scroll-container {
   overflow-x: auto;
   overflow-y: hidden;
@@ -8,8 +29,8 @@
 
 .book-grid {
   display: flex;
+  width: 100%;
   padding: 10px 0;
-  width: max-content;
 }
 
 .book-card {

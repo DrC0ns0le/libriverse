@@ -2,10 +2,7 @@
 include 'utils/db.php';
 include 'utils/auth.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+init_authenticated_session();
 
 $user_id = $_SESSION['user_id'];
 
@@ -214,7 +211,7 @@ if (isset($_POST['submit_review'])) {
         <?php if (empty($search_term) && empty($status_filter)): ?>
             <section class="section bookmarks-section">
                 <div class="section-title">
-                    <span>My Bookmarks</span>
+                    <span>Your Bookmarks</span>
                 </div>
                 <div class="scroll-container">
                     <div class="book-grid">
@@ -238,6 +235,8 @@ if (isset($_POST['submit_review'])) {
                                     </a>
                                 </div>
                             <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="no-bookmarks-message">Seems like you haven't added any bookmarks yet. Head on over the <a href="discover.php">Discover</a> page to find some great books!</p>
                         <?php endif; ?>
                     </div>
                 </div>

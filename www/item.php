@@ -154,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <!-- User Section -->
             <div class="navbar-user-section">
                 <?php if (is_logged_in()): ?>
+                    <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'null'); ?></span>
                     <a href="profile.php" class="navbar-item">Profile</a>
                     <a href="logout.php" class="navbar-item">Logout</a>
                 <?php else: ?>
@@ -314,42 +315,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         </div>
 
-    </div>
-    <div class="reviews-box">
-        <h2>Reviews</h2>
-        <div class="average-rating">
-            <span class="rating-stars">
-                <?php echo str_repeat('★', floor($avg_rating)) . str_repeat('☆', 5 - floor($avg_rating)); ?>
-            </span>
-            <span class="rating-number"><?php echo $avg_rating; ?></span>
-            <span class="total-ratings">(<?php echo $total_ratings; ?> reviews)</span>
-        </div>
-        <div id="reviews-container">
-            <?php if (empty($reviews)): ?>
-                <p>No reviews yet. Be the first to review this book!</p>
-            <?php else: ?>
-                <?php foreach ($reviews as $review): ?>
-                    <div class="review">
-                        <div class="review-header">
-                            <span class="review-author">
-                                <?php
-                                echo htmlspecialchars(
-                                    (trim($review['first_name']) && trim($review['last_name']))
-                                        ? $review['first_name'] . ' ' . $review['last_name']
-                                        : ($review['username'] !== 'Deleted User' ? $review['username'] : 'Anonymous')
-                                );
-                                ?>
-                            </span>
-                            <span class="review-rating">
-                                <?php echo str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']); ?>
-                            </span>
+        <div class="reviews-box">
+            <h2>Reviews</h2>
+            <div class="average-rating">
+                <span class="rating-stars">
+                    <?php echo str_repeat('★', floor($avg_rating)) . str_repeat('☆', 5 - floor($avg_rating)); ?>
+                </span>
+                <span class="rating-number"><?php echo $avg_rating; ?></span>
+                <span class="total-ratings">(<?php echo $total_ratings; ?> reviews)</span>
+            </div>
+            <div id="reviews-container">
+                <?php if (empty($reviews)): ?>
+                    <p>No reviews yet. Be the first to review this book!</p>
+                <?php else: ?>
+                    <?php foreach ($reviews as $review): ?>
+                        <div class="review">
+                            <div class="review-header">
+                                <span class="review-author">
+                                    <?php
+                                    echo htmlspecialchars(
+                                        (trim($review['first_name']) && trim($review['last_name']))
+                                            ? $review['first_name'] . ' ' . $review['last_name']
+                                            : ($review['username'] !== 'Deleted User' ? $review['username'] : 'Anonymous')
+                                    );
+                                    ?>
+                                </span>
+                                <span class="review-rating">
+                                    <?php echo str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']); ?>
+                                </span>
+                            </div>
+                            <p class="review-text"><?php echo htmlspecialchars($review['review'] ?? ''); ?></p>
                         </div>
-                        <p class="review-text"><?php echo htmlspecialchars($review['review'] ?? ''); ?></p>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
     </div>
 
 

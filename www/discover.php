@@ -9,11 +9,16 @@ $selectedRating = isset($_GET['rating']) ? (float)$_GET['rating'] : 0;
 $selectedAuthor = isset($_GET['author']) ? $_GET['author'] : '';
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 
-// Handle items per page selection
+// Handle items per page selection with cookie persistence
 $validItemsPerPage = [12, 24, 48, 96];
-$itemsPerPage = isset($_GET['items_per_page']) ? intval($_GET['items_per_page']) : 12;
+$itemsPerPage = isset($_GET['items_per_page']) ? intval($_GET['items_per_page']) : (isset($_COOKIE['items_per_page']) ? $_COOKIE['items_per_page'] : 12);
 if (!in_array($itemsPerPage, $validItemsPerPage)) {
     $itemsPerPage = 12; // Default if invalid value provided
+}
+
+// Save items per page preference to cookie if it changed
+if (isset($_GET['items_per_page']) && in_array($itemsPerPage, $validItemsPerPage)) {
+    setcookie('items_per_page', $itemsPerPage, time() + (86400 * 30), '/');
 }
 
 // Function to get total number of results
@@ -368,40 +373,63 @@ $conn->close();
 
 <script>
     function sortBooks(sortBy) {
+        // Save sort preference to sessionStorage
+        sessionStorage.setItem('sort', sortBy);
+
         const bookContainer = document.querySelector('.book-grid');
         const books = Array.from(bookContainer.children);
 
         books.sort((a, b) => {
             let aValue, bValue;
-
             switch (sortBy) {
                 case 'title_desc':
                     aValue = a.querySelector('.book-title').textContent;
                     bValue = b.querySelector('.book-title').textContent;
                     return bValue.localeCompare(aValue);
+
                 case 'author_desc':
                     aValue = a.querySelector('.book-author').textContent.replace('by ', '');
                     bValue = b.querySelector('.book-author').textContent.replace('by ', '');
                     return bValue.localeCompare(aValue);
+
                 case 'rating_desc':
                     aValue = parseFloat(a.querySelector('.book-rating').textContent.replace('★ ', ''));
                     bValue = parseFloat(b.querySelector('.book-rating').textContent.replace('★ ', ''));
                     return bValue - aValue;
+
                 case 'rating_asc':
                     aValue = parseFloat(a.querySelector('.book-rating').textContent.replace('★ ', ''));
                     bValue = parseFloat(b.querySelector('.book-rating').textContent.replace('★ ', ''));
                     return aValue - bValue;
+
                 case 'author_asc':
                 case 'title_asc':
                 default:
-                    aValue = (sortBy === 'author_asc' ? a.querySelector('.book-author').textContent.replace('by ', '') : a.querySelector('.book-title').textContent);
-                    bValue = (sortBy === 'author_asc' ? b.querySelector('.book-author').textContent.replace('by ', '') : b.querySelector('.book-title').textContent);
+                    aValue = (sortBy === 'author_asc' ?
+                        a.querySelector('.book-author').textContent.replace('by ', '') :
+                        a.querySelector('.book-title').textContent);
+                    bValue = (sortBy === 'author_asc' ?
+                        b.querySelector('.book-author').textContent.replace('by ', '') :
+                        b.querySelector('.book-title').textContent);
                     return aValue.localeCompare(bValue);
             }
         });
 
         books.forEach(book => bookContainer.appendChild(book));
     }
+
+    // Apply saved sort preference on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get sort preference from sessionStorage instead of localStorage
+        const sortPreference = sessionStorage.getItem('sort');
+        if (sortPreference) {
+            const sortSelect = document.querySelector('.sort-select');
+            if (sortSelect) {
+                sortSelect.value = sortPreference;
+                sortBooks(sortPreference);
+            }
+        }
+    });
 </script>
 
 </html>
