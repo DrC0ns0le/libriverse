@@ -21,20 +21,90 @@ $bookmark_stmt->bind_param("i", $user_id);
 $bookmark_stmt->execute();
 $bookmarks = $bookmark_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Fetch rental requests with review data
-$rental_stmt = $conn->prepare("
-    SELECT r.*, c.title, c.author, c.image_link, pl.library_name, pl.address,
+// Pagination settings
+// Items per page setting
+$valid_items_per_page = [4, 10, 30, 50, 100];
+$default_items_per_page = 10;
+
+if (isset($_GET['items_per_page']) && in_array((int)$_GET['items_per_page'], $valid_items_per_page)) {
+    $items_per_page = (int)$_GET['items_per_page'];
+    setcookie('items_per_page', $items_per_page, time() + (86400 * 30), "/"); // 30 days cookie
+} elseif (isset($_COOKIE['items_per_page']) && in_array((int)$_COOKIE['items_per_page'], $valid_items_per_page)) {
+    $items_per_page = (int)$_COOKIE['items_per_page'];
+} else {
+    $items_per_page = $default_items_per_page;
+}
+
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($current_page - 1) * $items_per_page;
+
+// Search and filter parameters
+$search_term = isset($_GET['search']) ? trim($_GET['search']) : '';
+$status_filter = isset($_GET['status']) ? $_GET['status'] : '';
+
+// Fetch bookmarks
+$bookmark_stmt = $conn->prepare("
+    SELECT b.id as bookmark_id, c.* 
+    FROM bookmark b 
+    JOIN catalog c ON b.catalog_id = c.id 
+    WHERE b.user_id = ?
+    ORDER BY b.id DESC
+");
+$bookmark_stmt->bind_param("i", $user_id);
+$bookmark_stmt->execute();
+$bookmarks = $bookmark_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+// Build the rental query with search and filters
+$rental_query = "
+    SELECT SQL_CALC_FOUND_ROWS r.*, c.title, c.author, c.image_link, pl.library_name, pl.address,
            rv.id as review_id, rv.rating, rv.review as comment
     FROM request r 
     JOIN catalog c ON r.catalog_id = c.id 
     LEFT JOIN pickup_location pl ON r.pickup_location_id = pl.id
     LEFT JOIN review rv ON rv.user_id = r.user_id AND rv.catalog_id = r.catalog_id
-    WHERE r.user_id = ? 
-    ORDER BY r.status_last_updated DESC
-");
-$rental_stmt->bind_param("i", $user_id);
+    WHERE r.user_id = ?
+";
+
+$query_params = [$user_id];
+$param_types = "i";
+
+if ($search_term) {
+    $rental_query .= " AND (c.title LIKE ? OR c.author LIKE ?)";
+    $search_param = "%{$search_term}%";
+    array_push($query_params, $search_param, $search_param);
+    $param_types .= "ss";
+}
+
+if ($status_filter) {
+    $rental_query .= " AND r.status = ?";
+    array_push($query_params, $status_filter);
+    $param_types .= "s";
+}
+
+$rental_query .= " ORDER BY r.status_last_updated DESC LIMIT ? OFFSET ?";
+array_push($query_params, $items_per_page, $offset);
+$param_types .= "ii";
+
+// Prepare and execute the rental query
+$rental_stmt = $conn->prepare($rental_query);
+$rental_stmt->bind_param($param_types, ...$query_params);
 $rental_stmt->execute();
 $rentals = $rental_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+// Get total number of results for pagination
+$total_results = $conn->query("SELECT FOUND_ROWS()")->fetch_row()[0];
+$total_pages = ceil($total_results / $items_per_page);
+
+// Get distinct status values for filter dropdown
+$status_stmt = $conn->prepare("
+    SELECT DISTINCT status 
+    FROM request 
+    WHERE user_id = ? 
+    ORDER BY status
+");
+$status_stmt->bind_param("i", $user_id);
+$status_stmt->execute();
+$status_options = $status_stmt->get_result()->fetch_all(MYSQLI_NUM);
 
 // Handle bookmark removal
 if (isset($_POST['remove_bookmark'])) {
@@ -141,46 +211,83 @@ if (isset($_POST['submit_review'])) {
     <div class="main-container">
         <h1>Bookshelf</h1>
 
-        <section class="section bookmarks-section">
-            <div class="section-title">
-                <span>My Bookmarks</span>
-            </div>
-            <div class="scroll-container">
-                <div class="book-grid">
-                    <?php if (!empty($bookmarks)): ?>
-                        <?php foreach ($bookmarks as $book): ?>
-                            <div class="book-card">
-                                <form method="POST" class="remove-form">
-                                    <button type="submit"
-                                        name="remove_bookmark"
-                                        value="<?php echo htmlspecialchars($book['bookmark_id']); ?>"
-                                        class="remove-button">&times;</button>
-                                </form>
-                                <a href="item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-link">
-                                    <img src="<?php echo htmlspecialchars($book['image_link']); ?>"
-                                        alt="<?php echo htmlspecialchars($book['title']); ?>"
-                                        class="book-image">
-                                    <div class="book-info">
-                                        <p class="book-title"><?php echo htmlspecialchars($book['title']); ?></p>
-                                        <p class="book-author">by <?php echo htmlspecialchars($book['author']); ?></p>
-                                    </div>
-                                </a>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+        <?php if (empty($search_term) && empty($status_filter)): ?>
+            <section class="section bookmarks-section">
+                <div class="section-title">
+                    <span>My Bookmarks</span>
                 </div>
-            </div>
-        </section>
+                <div class="scroll-container">
+                    <div class="book-grid">
+                        <?php if (!empty($bookmarks)): ?>
+                            <?php foreach ($bookmarks as $book): ?>
+                                <div class="book-card">
+                                    <form method="POST" class="remove-form">
+                                        <button type="submit"
+                                            name="remove_bookmark"
+                                            value="<?php echo htmlspecialchars($book['bookmark_id']); ?>"
+                                            class="remove-button">&times;</button>
+                                    </form>
+                                    <a href="item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-link">
+                                        <img src="<?php echo htmlspecialchars($book['image_link']); ?>"
+                                            alt="<?php echo htmlspecialchars($book['title']); ?>"
+                                            class="book-image">
+                                        <div class="book-info">
+                                            <p class="book-title"><?php echo htmlspecialchars($book['title']); ?></p>
+                                            <p class="book-author">by <?php echo htmlspecialchars($book['author']); ?></p>
+                                        </div>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </section>
+
+        <?php endif; ?>
 
         <section class="requests-section">
             <div class="section-title">
                 <span>Manage & Track Requests</span>
             </div>
+
+            <div class="filters-container">
+                <form method="GET" id="filterForm">
+                    <div class="search-container">
+                        <input type="text"
+                            name="search"
+                            id="searchInput"
+                            class="search-box"
+                            placeholder="Search by title or author..."
+                            value="<?php echo htmlspecialchars($search_term); ?>">
+                        <button type="button" id="clearSearch" class="clear-search">&times;</button>
+                    </div>
+
+                    <select name="status" class="status-filter" onchange="this.form.submit()">
+                        <option value="">All Status</option>
+                        <?php foreach ($status_options as $status): ?>
+                            <option value="<?php echo htmlspecialchars($status[0]); ?>"
+                                <?php echo $status_filter === $status[0] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($status[0]); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <select name="items_per_page" class="items-per-page" onchange="this.form.submit()">
+                        <?php foreach ($valid_items_per_page as $option): ?>
+                            <option value="<?php echo $option; ?>"
+                                <?php echo $items_per_page === $option ? 'selected' : ''; ?>>
+                                <?php echo $option; ?> items
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+            </div>
+
             <div class="scroll-container vertical-scroll">
                 <div class="rental-grid vertical-grid">
                     <?php if (empty($rentals)): ?>
                         <div class="rental-card empty">
-                            <p>No active rental requests</p>
+                            <p>No active rental requests found.</p>
                         </div>
                     <?php else: ?>
                         <?php foreach ($rentals as $rental): ?>
@@ -189,19 +296,27 @@ if (isset($_POST['submit_review'])) {
                                     alt="<?php echo htmlspecialchars($rental['title']); ?>"
                                     class="book-image">
                                 <div class="rental-info">
+                                    <div class="status-indicator">
+                                        <span class="status-badge <?php echo strtolower($rental['status']); ?>">
+                                            <?php echo htmlspecialchars($rental['status']); ?>
+                                        </span>
+                                        <span class="last-updated">
+                                            Last updated: <?php echo date('M j, Y g:i A', strtotime($rental['status_last_updated'])); ?>
+                                        </span>
+                                    </div>
                                     <a href="item.php?id=<?php echo htmlspecialchars($rental['catalog_id']); ?>">
                                         <div class="book-title"><?php echo htmlspecialchars($rental['title']); ?></div>
                                         <div class="book-author">by <?php echo htmlspecialchars($rental['author']); ?></div>
                                     </a>
-                                    <div class="status-indicator">
-                                        <span class="status-badge <?php echo strtolower($rental['status']); ?>">
-                                            Status: <?php echo htmlspecialchars($rental['status']); ?>
-                                        </span>
+                                    <div class="rental-details">
 
                                         <?php
                                         switch ($rental['status']) {
                                             case 'Collected':
                                         ?>
+                                                <div class="collection-info">
+                                                    Your book was collected on <?php echo date('M j, Y', strtotime($rental['status_last_updated'])); ?>. </br>
+                                                </div>
                                                 <div class="return-date">
                                                     <?php
                                                     $return_date = strtotime($rental['status_last_updated'] . ' + ' . $rental['rental_duration'] . ' days');
@@ -209,12 +324,12 @@ if (isset($_POST['submit_review'])) {
                                                     $days_diff = round(($return_date - $current_date) / (60 * 60 * 24));
 
                                                     if ($days_diff > 0) {
-                                                        echo "Return in " . $days_diff . " day" . ($days_diff != 1 ? "s" : "") . " (by " . date('d/m/Y', $return_date) . ")";
+                                                        echo "Please return the book in " . $days_diff . " day" . ($days_diff != 1 ? "s" : "") . " (by " . date('M j, Y', $return_date) . ")";
                                                     } elseif ($days_diff == 0) {
-                                                        echo "<span class='due-today'>Due today!</span>";
+                                                        echo "<span class='due-today'>Your book is due today!</span>";
                                                     } else {
                                                         $overdue_days = abs($days_diff);
-                                                        echo "<span class='overdue'>Overdue by " . $overdue_days . " day" . ($overdue_days != 1 ? "s" : "") . "</span>";
+                                                        echo "<span class='overdue'>Your book is overdue by " . $overdue_days . " day" . ($overdue_days != 1 ? "s" : "") . "</span>";
                                                     }
                                                     ?>
                                                 </div>
@@ -272,6 +387,57 @@ if (isset($_POST['submit_review'])) {
                                 </div>
                             </div>
                         <?php endforeach; ?>
+                        <?php if ($total_pages > 1): ?>
+                            <div class="pagination">
+                                <?php
+                                // Previous button
+                                if ($current_page > 1): ?>
+                                    <a href="?page=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
+                                        class="page-link">&laquo; Prev</a>
+                                <?php endif; ?>
+
+                                <?php
+                                // Calculate range of pages to show
+                                $range = 2; // Number of pages to show on each side of current page
+                                $start_page = max(1, $current_page - $range);
+                                $end_page = min($total_pages, $current_page + $range);
+
+                                // First page + ellipsis
+                                if ($start_page > 1): ?>
+                                    <a href="?page=1&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
+                                        class="page-link">1</a>
+                                    <?php if ($start_page > 2): ?>
+                                        <span class="page-ellipsis">&hellip;</span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+
+                                <?php
+                                // Main page numbers
+                                for ($i = $start_page; $i <= $end_page; $i++): ?>
+                                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
+                                        class="page-link <?php echo $i === $current_page ? 'active' : ''; ?>">
+                                        <?php echo $i; ?>
+                                    </a>
+                                <?php endfor; ?>
+
+                                <?php
+                                // Last page + ellipsis
+                                if ($end_page < $total_pages): ?>
+                                    <?php if ($end_page < $total_pages - 1): ?>
+                                        <span class="page-ellipsis">&hellip;</span>
+                                    <?php endif; ?>
+                                    <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
+                                        class="page-link"><?php echo $total_pages; ?></a>
+                                <?php endif; ?>
+
+                                <?php
+                                // Next button
+                                if ($current_page < $total_pages): ?>
+                                    <a href="?page=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
+                                        class="page-link">Next &raquo;</a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -390,6 +556,23 @@ if (isset($_POST['submit_review'])) {
 
         return true;
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const clearButton = document.getElementById('clearSearch');
+        const filterForm = document.getElementById('filterForm');
+
+        clearButton.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.focus();
+            this.style.display = 'none';
+            filterForm.submit();
+        });
+
+        searchInput.addEventListener('input', function() {
+            clearButton.style.display = this.value ? 'block' : 'none';
+        });
+    });
 </script>
 
 </html>

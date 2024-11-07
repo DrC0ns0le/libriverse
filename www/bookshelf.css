@@ -146,6 +146,111 @@
   }
 }
 
+/* Requests Search */
+/* Search Container Styles */
+.filters-container {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+}
+
+.filters-container form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-container {
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: none;
+}
+
+.search-box:not(:placeholder-shown) + .clear-search {
+  display: block;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  font-size: 0.95rem;
+  font-family: "IBM Plex Sans", sans-serif;
+  transition: all 0.2s ease;
+}
+
+.search-box:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  color: var(--text-color);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  border: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: #f8f9fa;
+  border-color: #838383;
+}
+
+.filters-container select {
+  padding: 12px 24px;
+  border: 1px solid #e1e1e1;
+  border-radius: var(--search-border-radius);
+  background-color: white;
+  font-size: 0.95rem;
+  font-family: "IBM Plex Sans", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.filters-container select:hover {
+  border-color: #838383;
+}
+
+.filters-container select:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Requests section */
 .requests-section {
   overflow: hidden;
@@ -160,21 +265,22 @@
 .rental-grid.vertical-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   width: 100%;
+  align-items: center;
 }
 
 .rental-card {
-  width: 95%;
+  width: 97%;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 16px;
-  margin: auto;
+  margin: 8px;
   background-color: white;
   border-radius: 10px;
   transition: all 0.3s ease;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
 .rental-card:hover {
@@ -194,6 +300,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 200px;
 }
 
 .rental-info a {
@@ -218,29 +325,88 @@
   margin-bottom: 8px;
 }
 
+.rental-details {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: 4px;
+}
+
 .status-indicator {
-  margin-top: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 4px;
 }
 
 .status-badge {
-  font-size: 1rem;
+  border: 1px solid #e1e1e1;
+  width: fit-content;
+  padding: 4px 6px;
+  font-size: 0.7rem;
   border-radius: 5px;
+  padding-left: 0.6rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.status-badge.ready {
+  background-color: #d4edda;
+  color: #155724;
+  border: 0px;
+}
+
+.status-badge.requested {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 0px;
+}
+
+.status-badge.preparing {
+  background-color: #f2d6b5;
+  color: #5f5241;
+  border: 0px;
+}
+
+.status-badge.collected {
+  background-color: #cfe2fd;
+  color: #084298;
+  border: 0px;
+}
+
+.last-updated {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 10px;
+  justify-self: end;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.last-updated:hover {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 10px;
+  justify-self: end;
+  opacity: 1;
 }
 
 .return-date {
-  margin-top: 8px;
+  margin-top: auto;
   font-size: 0.9rem;
   color: var(--text-light);
+  justify-self: end;
 }
 
 .collection-info {
-  margin-top: 8px;
   font-size: 0.9rem;
   color: var(--text-light);
+  margin-top: auto;
 }
 
 .actions {
-  margin-top: 16px;
+  margin-top: auto;
 }
 
 .rental-card .actions .button {
@@ -280,6 +446,44 @@
 
 .rental-card .actions .button:hover {
   opacity: 0.9;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 0.5rem;
+}
+
+.page-link {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.page-link:hover {
+  background: #f5f5f5;
+}
+
+.page-link.active {
+  background: #494949;
+  color: #fff;
+  border-color: #494949;
+}
+
+.page-ellipsis {
+  padding: 0.5rem;
+  color: #666;
+}
+
+.results-section {
+  margin-bottom: 2rem;
 }
 
 /* Review form */

@@ -63,13 +63,24 @@ $book['ratings_count'] = $total_ratings;
 
 $is_logged_in = isset($_SESSION['user_id']);
 $is_bookmarked = false;
+$rental_status = false;
 
 if ($is_logged_in) {
+    // Check if the user has bookmarked this book
     $bookmark_stmt = $conn->prepare("SELECT id FROM bookmark WHERE user_id = ? AND catalog_id = ?");
     $bookmark_stmt->bind_param("ii", $_SESSION['user_id'], $id);
     $bookmark_stmt->execute();
     $bookmark_result = $bookmark_stmt->get_result();
     $is_bookmarked = $bookmark_result->num_rows > 0;
+
+    // Check if the user has an active rental
+    $rental_check_stmt = $conn->prepare("SELECT status FROM request WHERE user_id = ? AND catalog_id = ? AND status IN ('Requested', 'Preparing', 'Ready', 'Collected') ORDER BY id DESC LIMIT 1");
+    $rental_check_stmt->bind_param("ii", $_SESSION['user_id'], $id);
+    $rental_check_stmt->execute();
+    $rental_result = $rental_check_stmt->get_result();
+    if ($rental_result->num_rows > 0) {
+        $rental_status = $rental_result->fetch_assoc()['status'];
+    }
 }
 
 $daily_rate = ($book['price'] * 1.5) / 30;
@@ -111,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -209,7 +221,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 </form>
                             </div>
 
-                            <button id="openRentalPopup" class="rental-button">Rent This Book</button>
+                            <?php if ($rental_status): ?>
+                                <button class="rental-button" onclick="window.location.href='bookshelf.php?search=<?php echo urlencode($book['title']); ?>'">
+                                    View Rental Status
+                                </button>
+                            <?php else: ?>
+                                <button id="openRentalPopup" class="rental-button">Rent This Book</button>
+                            <?php endif; ?>
                         </div>
                         <div id="rentalPopup" class="popup">
                             <div class="popup-content">
