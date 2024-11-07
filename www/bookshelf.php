@@ -292,9 +292,13 @@ if (isset($_POST['submit_review'])) {
                     <?php else: ?>
                         <?php foreach ($rentals as $rental): ?>
                             <div class="rental-card">
-                                <img src="<?php echo htmlspecialchars($rental['image_link']); ?>"
-                                    alt="<?php echo htmlspecialchars($rental['title']); ?>"
-                                    class="book-image">
+                                <div class="book-image-container">
+                                    <a href="item.php?id=<?php echo htmlspecialchars($rental['catalog_id']); ?>">
+                                        <img src="<?php echo htmlspecialchars($rental['image_link']); ?>"
+                                            alt="<?php echo htmlspecialchars($rental['title']); ?>"
+                                            class="book-image">
+                                    </a>
+                                </div>
                                 <div class="rental-info">
                                     <div class="status-indicator">
                                         <span class="status-badge <?php echo strtolower($rental['status']); ?>">

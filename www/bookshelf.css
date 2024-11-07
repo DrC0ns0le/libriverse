@@ -34,7 +34,10 @@
   width: 220px;
   height: 350px;
   object-fit: cover;
-  margin-right: 30px;
+}
+
+.book-image-container {
+  height: 200px;
 }
 
 .book-link {
@@ -345,7 +348,6 @@
   padding: 4px 6px;
   font-size: 0.7rem;
   border-radius: 5px;
-  padding-left: 0.6rem;
   text-transform: uppercase;
   font-weight: 700;
   font-family: "IBM Plex Sans", sans-serif;
