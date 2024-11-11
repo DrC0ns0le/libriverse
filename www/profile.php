@@ -150,31 +150,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="profile.css">
-
-    <nav class="navbar">
-        <div class="navbar-container">
-            <!-- Logo/Title Section -->
-            <div class="navbar-logo-section">
-                <a href="index.php" class="navbar-logo">Libriverse</a>
-            </div>
-
-            <!-- Pages Section -->
-            <ul class="navbar-pages">
-                <li><a href="index.php" class="navbar-item">Home</a></li>
-                <li><a href="discover.php" class="navbar-item">Discover</a></li>
-                <li><a href="bookshelf.php" class="navbar-item">Bookshelf</a></li>
-            </ul>
-
-            <!-- User Section -->
-            <div class="navbar-user-section">
-                <a href="profile.php" class="navbar-item" style="font-weight: bold;">Profile</a>
-                <a href="logout.php" class="navbar-item">Logout</a>
-            </div>
-        </div>
-    </nav>
 </head>
 
 <body>
+     <!-- Sidebar Navbar (Left Sidebar) -->
+     <div class="navbar">
+
+        <!-- Logo/Title Section -->
+        <div class="navbar-logo-section">
+            <a href="index.php" class="navbar-logo">
+                <img src="assets/logo/libriverse_logo.png" alt="Libriverse Logo" class="navbar-logo-image">
+                <span class="navbar-logo-text">Libriverse</span>
+            </a>
+        </div>
+
+        <!-- Pages Section -->
+        <ul class="navbar-pages">
+            <li><a href="index.php" class="navbar-item"><img src="assets/icons/home.svg" alt="Home" class="navbar-icon white"><span class="navbar-label">Home</span></a></li>
+            <li><a href="discover.php" class="navbar-item"><img src="assets/icons/explore.svg" alt="Discover" class="navbar-icon red"><span class="navbar-label">Discover</span></a></li>
+            <?php if (is_logged_in()): ?>
+                <li><a href="bookshelf.php" class="navbar-item"><img src="assets/icons/collections.svg" alt="Bookshelf" class="navbar-icon white"><span class="navbar-label">Bookshelf</span></a></li>
+            <?php endif; ?>
+        </ul>
+
+        <!-- User Section -->
+        <ul class="navbar-user-section">
+            <?php if (is_logged_in()): ?>
+                <!-- Profile photo and username -->
+                <li><a href="profile.php" class="navbar-item active">
+                    <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
+                    <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+                </a></li>
+                <!-- Logout link -->
+                <li><a href="logout.php" class="navbar-item">
+                    <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white">
+                    <span class="navbar-label">Logout</span>
+                </a></li>
+            <?php else: ?>
+                <!-- Login link -->
+                <li><a href="login.php" class="navbar-item">
+                    <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
+                    <span class="navbar-label">Login</span>
+                </a></li>
+            <?php endif; ?>
+        </ul>
+    </div>
+
     <div class="main-container">
         <div class="profile-header">
             <h1>User Profile</h1>
