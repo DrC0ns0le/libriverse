@@ -186,7 +186,13 @@
 
 .see-more-content span {
   font-size: 1.2rem;
-  color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+.see-more-content span:hover {
+  cursor: pointer;
+  text-decoration: underline;
+  font-style: italic;
 }
 
 .see-more-content .arrow {
