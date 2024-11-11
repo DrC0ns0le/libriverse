@@ -7,10 +7,9 @@ h3 {
 /* Success and Error Messages */
 .success,
 .error {
+  margin: 1rem;
   padding: 15px;
-  margin-bottom: 30px;
   border-radius: 8px;
-  font-size: 1.1rem;
   font-family: "IBM Plex Sans", sans-serif;
 }
 

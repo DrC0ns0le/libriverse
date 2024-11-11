@@ -75,71 +75,91 @@ function handle_file_upload($file_input_name, $allowed_extensions, $upload_dir)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Book - Admin</title>
-    <link rel="stylesheet" href="../base.css">
-    <link rel="stylesheet" href="../navbar.css">
-    <link rel="stylesheet" href="add_book.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="css/add_book.css">
 </head>
 
 <body>
-
     <div class="admin-form">
-        <h2>Add New Book</h2>
-        <?php if ($message): ?>
-            <div class="message"><?php echo $message; ?></div>
-        <?php endif; ?>
+        <h1>Add New Book</h1>
+
         <form action="" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" required>
+            <div class="form-layout">
+                <!-- Left Column - Basic Information -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="title">Title *</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="author">Author *</label>
+                        <input type="text" id="author" name="author" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="publisher">Publisher</label>
+                        <input type="text" id="publisher" name="publisher">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="genre">Genre</label>
+                        <input type="text" id="genre" name="genre">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <input type="text" id="language" name="language">
+                    </div>
+                </div>
+
+                <!-- Right Column - Additional Details -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ratings">Ratings (0-5)</label>
+                        <input type="number" id="ratings" name="ratings" step="0.01" min="0" max="5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Type *</label>
+                        <select id="type" name="type" required onchange="toggleFields()">
+                            <option value="physical">Physical</option>
+                            <option value="electronic">Electronic</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price *</label>
+                        <input type="number" id="price" name="price" step="0.01" required>
+                    </div>
+
+                    <div class="form-group" id="inventoryGroup">
+                        <label for="inventory">Inventory *</label>
+                        <input type="number" id="inventory" name="inventory" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="author">Author:</label>
-                <input type="text" id="author" name="author" required>
+
+            <!-- Bottom Section - File Uploads -->
+            <div class="upload-section">
+                <div class="form-group" id="pdfGroup" style="display:none;">
+                    <label for="pdf_file">PDF File *</label>
+                    <input type="file" id="pdf_file" name="pdf_file" accept=".pdf">
+                </div>
+
+                <div class="form-group">
+                    <label for="image_file">Cover Image *</label>
+                    <input type="file" id="image_file" name="image_file" accept="image/*" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="publisher">Publisher:</label>
-                <input type="text" id="publisher" name="publisher">
-            </div>
-            <div class="form-group">
-                <label for="genre">Genre:</label>
-                <input type="text" id="genre" name="genre">
-            </div>
-            <div class="form-group">
-                <label for="language">Language:</label>
-                <input type="text" id="language" name="language">
-            </div>
-            <div class="form-group">
-                <label for="ratings">Ratings:</label>
-                <input type="number" id="ratings" name="ratings" step="0.01" min="0" max="5">
-            </div>
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" rows="4"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="type">Type:</label>
-                <select id="type" name="type" required onchange="toggleFields()">
-                    <option value="physical">Physical</option>
-                    <option value="electronic">Electronic</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="price">Price:</label>
-                <input type="number" id="price" name="price" step="0.01" required>
-            </div>
-            <div class="form-group" id="inventoryGroup">
-                <label for="inventory">Inventory:</label>
-                <input type="number" id="inventory" name="inventory" required>
-            </div>
-            <div class="form-group" id="pdfGroup" style="display:none;">
-                <label for="pdf_file">PDF File:</label>
-                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf">
-            </div>
-            <div class="form-group">
-                <label for="image_file">Cover Image:</label>
-                <input type="file" id="image_file" name="image_file" accept="image/*" required>
-            </div>
-            <div class="form-group">
+
+            <div class="submit-section">
                 <input type="submit" value="Add Book">
             </div>
         </form>
@@ -166,7 +186,6 @@ function handle_file_upload($file_input_name, $allowed_extensions, $upload_dir)
             }
         }
 
-        // Call toggleFields on page load to set initial state
         document.addEventListener('DOMContentLoaded', toggleFields);
     </script>
 </body>

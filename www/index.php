@@ -83,8 +83,6 @@ $banners = $result->fetch_all(MYSQLI_ASSOC);
         </div>
     </div>
 
-    <!-- Rest of your page content goes here -->
-
     <script>
         let currentBanner = 0;
         const banners = document.querySelectorAll('.banner');

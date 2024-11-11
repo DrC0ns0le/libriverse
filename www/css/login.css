@@ -1,8 +1,8 @@
 /* login.css */
 
-/* h1 {
-  margin: 0rem;
-} */
+h1 {
+  margin-left: 0rem;
+}
 
 .login-container {
   width: 80%;
@@ -16,6 +16,10 @@
   padding: 4rem;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  align-self: center;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
 
 .details-container {

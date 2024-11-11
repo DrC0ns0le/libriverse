@@ -1,29 +1,73 @@
+body {
+  height: 100%;
+  overflow: scroll;
+}
+
+h1 {
+  margin-left: 0px;
+}
+
 .admin-form {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  margin: 4rem;
+  max-width: 1200px;
+  width: 60%;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-layout {
+  display: flex;
+  gap: 2rem;
+}
+
+.form-column {
+  flex: 1;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 1.25rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4a5568;
 }
 
-.message {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #e7f3fe;
-  border-left: 6px solid #2196f3;
+.submit-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
 }
 
-input,
-textarea {
-  width: 100%;
-  box-sizing: border-box;
+.upload-section {
+  background-color: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .form-layout {
+    flex-direction: column;
+  }
+
+  .admin-form {
+    width: 100%;
+    padding: 1.5rem;
+  }
 }

@@ -297,9 +297,9 @@ $conn->close();
                     </div>
 
                     <?php if ($totalPages > 1): ?>
-                        <div class="pagination">
+                        <div class="pagination-container">
                             <?php if ($page > 1): ?>
-                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="page-link">&laquo; Previous</a>
+                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="pagination">&laquo; Previous</a>
                             <?php endif; ?>
 
                             <?php
@@ -308,9 +308,9 @@ $conn->close();
                             for ($i = 1; $i <= $totalPages; $i++) {
                                 if ($i == 1 || $i == $totalPages || ($i >= $page - $range && $i <= $page + $range)) {
                                     if ($i == $page) {
-                                        echo "<span class='page-link active'>$i</span>";
+                                        echo "<span class='pagination active'>$i</span>";
                                     } else {
-                                        echo "<a href='?" . http_build_query(array_merge($_GET, ['page' => $i])) . "' class='page-link'>$i</a>";
+                                        echo "<a href='?" . http_build_query(array_merge($_GET, ['page' => $i])) . "' class='pagination'>$i</a>";
                                     }
                                 } elseif ($i == $page - $range - 1 || $i == $page + $range + 1) {
                                     echo "<span class='page-ellipsis'>...</span>";
@@ -319,7 +319,7 @@ $conn->close();
                             ?>
 
                             <?php if ($page < $totalPages): ?>
-                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="page-link">Next &raquo;</a>
+                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="pagination">Next &raquo;</a>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>

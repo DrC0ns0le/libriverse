@@ -1,4 +1,8 @@
 /* Container */
+body {
+  overflow: scroll;
+  height: 100%;
+}
 .container {
   width: 80%;
   max-width: 600px;
@@ -8,6 +12,10 @@
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  height: fit-content;
+  align-self: center;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
 
 /* Headings */

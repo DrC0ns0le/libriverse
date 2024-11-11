@@ -12,14 +12,35 @@ $redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
     <title>Unauthorized Access - Libriverse</title>
     <link rel="stylesheet" href="css/base.css">
     <style>
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+
+            text-align: center;
+        }
+
         .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
             text-decoration: none;
-            border-radius: 5px;
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--search-border-radius);
+            background-color: white;
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            font-family: "IBM Plex Sans", sans-serif;
+            font-size: 0.95rem;
+            border: 1px solid #e1e1e1;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            background-color: #f8f9fa;
+            border-color: #838383;
         }
     </style>
 </head>

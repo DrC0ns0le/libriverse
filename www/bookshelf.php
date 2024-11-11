@@ -416,12 +416,12 @@ if (isset($_POST['delete_review'])) {
                             </div>
                         <?php endforeach; ?>
                         <?php if ($total_pages > 1): ?>
-                            <div class="pagination">
+                            <div class="pagination-container">
                                 <?php
                                 // Previous button
                                 if ($current_page > 1): ?>
                                     <a href="?page=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
-                                        class="page-link">&laquo; Prev</a>
+                                        class="pagination">&laquo; Previous</a>
                                 <?php endif; ?>
 
                                 <?php
@@ -433,7 +433,7 @@ if (isset($_POST['delete_review'])) {
                                 // First page + ellipsis
                                 if ($start_page > 1): ?>
                                     <a href="?page=1&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
-                                        class="page-link">1</a>
+                                        class="pagination">1</a>
                                     <?php if ($start_page > 2): ?>
                                         <span class="page-ellipsis">&hellip;</span>
                                     <?php endif; ?>
@@ -443,7 +443,7 @@ if (isset($_POST['delete_review'])) {
                                 // Main page numbers
                                 for ($i = $start_page; $i <= $end_page; $i++): ?>
                                     <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
-                                        class="page-link <?php echo $i === $current_page ? 'active' : ''; ?>">
+                                        class="pagination <?php echo $i === $current_page ? 'active' : ''; ?>">
                                         <?php echo $i; ?>
                                     </a>
                                 <?php endfor; ?>
@@ -455,14 +455,14 @@ if (isset($_POST['delete_review'])) {
                                         <span class="page-ellipsis">&hellip;</span>
                                     <?php endif; ?>
                                     <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
-                                        class="page-link"><?php echo $total_pages; ?></a>
+                                        class="pagination"><?php echo $total_pages; ?></a>
                                 <?php endif; ?>
 
                                 <?php
                                 // Next button
                                 if ($current_page < $total_pages): ?>
                                     <a href="?page=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search_term); ?>&status=<?php echo urlencode($status_filter); ?>"
-                                        class="page-link">Next &raquo;</a>
+                                        class="pagination">Next &raquo;</a>
                                 <?php endif; ?>
                             </div>
                         <?php endif; ?>

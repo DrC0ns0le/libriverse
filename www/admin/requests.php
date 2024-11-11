@@ -17,7 +17,7 @@ while ($status_row = $status_result->fetch_assoc()) {
 
 // Pagination
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$per_page = 10;
+$per_page = 5;
 $offset = ($page - 1) * $per_page;
 
 // Filtering
@@ -101,9 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Requests - Admin</title>
-    <link rel="stylesheet" href="../base.css">
-    <link rel="stylesheet" href="../navbar.css">
-    <link rel="stylesheet" href="requests.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="css/requests.css">
 </head>
 
 <body>
@@ -165,13 +165,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     </table>
 
     <!-- Pagination -->
-    <div class="pagination">
-        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?page=<?php echo $i; ?>&status=<?php echo htmlspecialchars($status_filter); ?>&user=<?php echo htmlspecialchars($user_filter); ?>&book=<?php echo htmlspecialchars($book_filter); ?>"
-                <?php echo $i == $page ? 'style="font-weight: bold;"' : ''; ?>>
+    <div class="pagination-container">
+        <?php
+        // Previous button
+        if ($page > 1): ?>
+            <a href="?page=<?php echo ($page - 1); ?>&status=<?php echo urlencode($status_filter); ?>&user=<?php echo urlencode($user_filter); ?>&book=<?php echo urlencode($book_filter); ?>"
+                class="pagination">&laquo; Previous</a>
+        <?php endif; ?>
+
+        <?php
+        // Calculate range of pages to show
+        $range = 2; // Number of pages to show on each side of current page
+        $start_page = max(1, $page - $range);
+        $end_page = min($total_pages, $page + $range);
+
+        // First page + ellipsis
+        if ($start_page > 1): ?>
+            <a href="?page=1&status=<?php echo urlencode($status_filter); ?>&user=<?php echo urlencode($user_filter); ?>&book=<?php echo urlencode($book_filter); ?>"
+                class="pagination">1</a>
+            <?php if ($start_page > 2): ?>
+                <span class="page-ellipsis">&hellip;</span>
+        <?php endif;
+        endif; ?>
+
+        <?php
+        // Main page numbers
+        for ($i = $start_page; $i <= $end_page; $i++): ?>
+            <a href="?page=<?php echo $i; ?>&status=<?php echo urlencode($status_filter); ?>&user=<?php echo urlencode($user_filter); ?>&book=<?php echo urlencode($book_filter); ?>"
+                class="pagination <?php echo $i === $page ? 'active' : ''; ?>">
                 <?php echo $i; ?>
             </a>
         <?php endfor; ?>
+
+        <?php
+        // Last page + ellipsis
+        if ($end_page < $total_pages): ?>
+            <?php if ($end_page < $total_pages - 1): ?>
+                <span class="page-ellipsis">&hellip;</span>
+            <?php endif; ?>
+            <a href="?page=<?php echo $total_pages; ?>&status=<?php echo urlencode($status_filter); ?>&user=<?php echo urlencode($user_filter); ?>&book=<?php echo urlencode($book_filter); ?>"
+                class="pagination"><?php echo $total_pages; ?></a>
+        <?php endif; ?>
+
+        <?php
+        // Next button
+        if ($page < $total_pages): ?>
+            <a href="?page=<?php echo ($page + 1); ?>&status=<?php echo urlencode($status_filter); ?>&user=<?php echo urlencode($user_filter); ?>&book=<?php echo urlencode($book_filter); ?>"
+                class="pagination">Next &raquo;</a>
+        <?php endif; ?>
     </div>
 </body>
 

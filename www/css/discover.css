@@ -102,14 +102,14 @@
 }
 
 .book-card:hover {
-  transform: translateY(-5px) scale(1.05);
+  transform: scale(1.005);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .book-genre {
   font-family: "IBM Plex Sans Condensed", sans-serif;
   font-size: 0.75rem;
-  color: var(--text-light);
+  color: var(--text-color);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
@@ -251,23 +251,23 @@
 
 .book-grid.vertical-grid .book-author {
   font-size: 1rem;
-  color: var(--text-light);
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
 .book-grid.vertical-grid .book-genre {
-  color: var(--text-light);
+  color: var(--text-color);
   margin-bottom: 0px;
 }
 
 .book-grid.vertical-grid .book-rating {
   font-size: 1rem;
-  color: var(--text-light);
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
 .book-grid.vertical-grid .book-description {
-  color: var(--text-light);
+  color: var(--text-color);
   margin-top: 16px;
   line-height: 1.4;
   word-wrap: break-word;
@@ -276,44 +276,6 @@
 .book-grid.vertical-grid .book-rating {
   color: #f39c12; /* Golden color for rating */
   font-weight: bold;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 2rem 0;
-  gap: 0.5rem;
-}
-
-.page-link {
-  padding: 0.25rem 0.75rem;
-  border-radius: 10px;
-  text-decoration: none;
-  color: var(--text-color);
-  background: var(--background-color);
-  transition: all 0.2s ease;
-}
-
-.page-link:hover {
-  border-radius: 50%;
-  background: var(--element-background);
-}
-
-.page-link.active {
-  border-radius: 50%;
-  background: var(--secondary-color);
-  color: var(--text-light);
-}
-
-.page-ellipsis {
-  padding: 0.5rem;
-  color: var(--text-color);
-}
-
-.results-section {
-  margin-bottom: 2rem;
 }
 
 /* Responsive Design */
