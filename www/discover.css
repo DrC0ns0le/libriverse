@@ -17,44 +17,56 @@
   flex: 1;
   min-width: 250px;
   padding: 12px 16px;
-  border: 1px solid #e1e1e1;
+  border: 1px solid var(--search-border-color);
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--search-background);
   font-size: 0.95rem;
   font-family: "IBM Plex Sans", sans-serif;
   transition: all 0.2s ease;
+  position:relative;
+  background-image: url('assets/icons/search.svg'); /* Path to PNG or JPEG */
+  background-position: 16px center; /* Position the icon inside the input */
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: var(--secondary-color);
+  border-color: var(--search-border-focus-color);
+  background-color: var(--search-background);
+  background-image: none;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-input:focus::placeholder {
+  color: transparent; /* Make placeholder text invisible */
 }
 
 .search-button {
   padding: 12px 24px;
   border: none;
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--search-background);
   color: var(--text-color);
   font-weight: 500;
   cursor: pointer;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
-  border: 1px solid #e1e1e1;
+  border: 1px solid var(--search-border-color);
   transition: all 0.2s ease;
 }
 
 .search-button:hover {
-  background-color: #f8f9fa;
-  border-color: #838383;
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--text-light);
 }
 
 .search-container select {
   padding: 12px 24px;
-  border: 1px solid #e1e1e1;
+  border: 1px solid var(--search-border-color);
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--search-background);
   font-size: 0.95rem;
   font-family: "IBM Plex Sans", sans-serif;
   cursor: pointer;
@@ -72,7 +84,7 @@
 
 .search-container select:focus {
   outline: none;
-  border-color: var(--secondary-color);
+  border-color: var(--search-border-color);
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
@@ -88,6 +100,29 @@
   overflow-y: hidden;
   padding: 10px 0;
   margin: -10px 0;
+  scroll-behavior: smooth;
+}
+
+/* Webkit-based browsers (Chrome, Safari, Edge) */
+.scroll-container::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+  height: 10px; /* Height for horizontal scrollbar */
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: var(--background-color); /* Light background for the scrollbar track */
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: var(--search-border-color); /* Blue color for the thumb (scroll handle) */
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary-color); /* Darken the thumb on hover */
+}
+
+.scroll-container::-webkit-scrollbar-button {
+  display: none; /* Hide the scroll buttons on the scrollbar */
 }
 
 .book-grid {
@@ -105,13 +140,14 @@
   text-decoration: none;
   color: inherit;
   transition: all 0.3s ease;
-  background-color: white;
+  background-color: var(--background-color);
   border-radius: 8px;
   width: 220px;
 }
 
 .book-card:hover {
-  transform: scale(1.005);
+  background-color: var(--background-color);
+  transform: translateY(-5px) scale(1.050);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -172,12 +208,12 @@
 
 .section-title span {
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-color);
   text-transform: capitalize;
 }
 
 .book-card.see-more {
-  background-color: #f0f0f0;
+  background-color: var(--background-color);
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -194,7 +230,7 @@
 
 .see-more-content span {
   font-size: 1.2rem;
-  color: #333;
+  color: var(--secondary-color);
 }
 
 .see-more-content .arrow {
@@ -203,7 +239,7 @@
 }
 
 .book-card.see-more:hover {
-  background-color: #f0f0f0;
+  background-color: var(--background-color);
   transform: scale(1.005);
 }
 
@@ -297,27 +333,27 @@
 
 .page-link {
   padding: 0.25rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 10px;
   text-decoration: none;
-  color: #333;
-  background: #fff;
+  color: var(--text-color);
+  background: var(--background-color);
   transition: all 0.2s ease;
 }
 
 .page-link:hover {
-  background: #f5f5f5;
+  border-radius: 50%;
+  background: var(--search-background);
 }
 
 .page-link.active {
-  background: #494949;
-  color: #fff;
-  border-color: #494949;
+  border-radius: 50%;
+  background: var(--secondary-color);
+  color: var(--text-light);
 }
 
 .page-ellipsis {
   padding: 0.5rem;
-  color: #666;
+  color: var(--text-color);
 }
 
 .results-section {
