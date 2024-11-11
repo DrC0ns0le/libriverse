@@ -345,7 +345,7 @@
 
 .rental-info .book-author {
   font-size: 1rem;
-  color: var(--text-light);
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
@@ -418,13 +418,13 @@
 .return-date {
   margin-top: auto;
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: var(--text-color);
   justify-self: end;
 }
 
 .collection-info {
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: var(--text-color);
   margin-top: auto;
 }
 
