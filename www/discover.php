@@ -165,13 +165,13 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discover Books - Libriverse</title>
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="discover.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/discover.css">
 </head>
 
 <body>
-     <!-- Sidebar Navbar (Left Sidebar) -->
+    <!-- Sidebar Navbar (Left Sidebar) -->
     <div class="navbar">
 
         <!-- Logo/Title Section -->
@@ -195,21 +195,19 @@ $conn->close();
         <ul class="navbar-user-section">
             <?php if (is_logged_in()): ?>
                 <!-- Profile photo and username -->
-                <li><a href="profile.php" class="navbar-item">
-                    <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
-                    <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-                </a></li>
-                <!-- Logout link -->
-                <li><a href="logout.php" class="navbar-item">
-                    <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white">
-                    <span class="navbar-label">Logout</span>
-                </a></li>
+                <li><a href="profile.php" class="navbar-item username">
+                        <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
+                        <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+                    </a><a href="logout.php" class="navbar-item">
+                        <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white logout">
+                    </a>
+                </li>
             <?php else: ?>
                 <!-- Login link -->
                 <li><a href="login.php" class="navbar-item">
-                    <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
-                    <span class="navbar-label">Login</span>
-                </a></li>
+                        <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
+                        <span class="navbar-label">Login</span>
+                    </a></li>
             <?php endif; ?>
         </ul>
     </div>
@@ -221,7 +219,7 @@ $conn->close();
 
         <div class="search-container">
             <form action="" method="GET" id="searchForm">
-                <input type="text" name="search" class="search-input" placeholder="       Search for books, authors, or genres..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="search" class="search-input" placeholder="       Search for books, authors, or genres..." value="<?php echo htmlspecialchars($search); ?>"><button type="submit" class="search-button">Search</button>
 
                 <div class="filter-row">
                     <select name="sort" class="sort-select" onchange="sortBooks(this.value)">
@@ -267,8 +265,6 @@ $conn->close();
                             </option>
                         <?php endforeach; ?>
                     </select>
-
-                    <button type="submit" class="search-button">Search</button>
                 </div>
             </form>
         </div>

@@ -1,0 +1,130 @@
+/* Base Styles for the Navbar */
+.navbar {
+  width: 250px;
+  background-color: var(--background-color);
+  color: var(--text-light);
+  padding-top: 30px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-color);
+}
+
+/* Container to hold logo and pages */
+.navbar-container {
+  max-width: 70rem;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  overflow: auto;
+}
+
+/* Logo/Title Section */
+.navbar-logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  margin-bottom: 50px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  letter-spacing: -0.05rem;
+}
+
+.navbar-logo-image {
+  width: 30px;
+  height: auto;
+  filter: brightness(0);
+  margin-right: 10px;
+}
+
+/* Navbar Links and Items */
+.navbar-pages {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  margin-inline: 16px;
+  padding: 0;
+}
+
+/* Navbar Item (Links with icons) */
+.navbar-item {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 8px;
+  font-size: 1rem;
+  font-family: "IBM Plex Sans", sans-serif;
+  border-radius: var(--search-border-radius);
+  transition: all 0.3s ease;
+}
+
+.navbar-item:hover {
+  font-weight: bold;
+  background-color: var(--secondary-color);
+}
+
+/* Navbar Item Active State */
+.navbar-item.active {
+  font-weight: 600;
+  background-color: var(--secondary-color);
+}
+
+/* Navbar Icon Size */
+.navbar-icon {
+  width: auto;
+  height: 20px;
+  margin-right: 15px;
+}
+
+/* Specific Icon Colors */
+.navbar-icon.black {
+  filter: invert(3%) sepia(14%) saturate(915%) hue-rotate(325deg)
+    brightness(104%) contrast(101%);
+}
+
+.navbar-icon.white {
+  filter: brightness(0);
+}
+
+/* User Section (Profile and Logout) */
+.navbar-user-section {
+  list-style: none;
+  padding: 16px;
+  margin-top: auto; /* Align user section at the bottom */
+  gap: 0.75rem;
+}
+
+.navbar-user-section li {
+  display: flex;
+  flex-direction: row;
+}
+
+.logout {
+  margin: 0;
+}
+
+/* Username and User Photo */
+.navbar-username {
+  color: var(--text-color);
+}
+
+.navbar-user-section .username {
+  width: 100%;
+}
+
+.navbar-user-photo {
+  width: 30px; /* Photo size */
+  height: 30px;
+  border-radius: 50%; /* Circular photo */
+  margin-right: 15px; /* Spacing between photo and username */
+}

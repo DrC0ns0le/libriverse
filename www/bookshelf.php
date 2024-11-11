@@ -160,6 +160,20 @@ if (isset($_POST['submit_review'])) {
     header('Location: bookshelf.php');
     exit;
 }
+
+// Handle review deletion
+if (isset($_POST['delete_review'])) {
+    $review_id = intval($_POST['review_id']);
+    $delete_review_stmt = $conn->prepare("DELETE FROM review WHERE id = ? AND user_id = ?");
+    $delete_review_stmt->bind_param("ii", $review_id, $user_id);
+    if ($delete_review_stmt->execute()) {
+        // Redirect to refresh the page
+        header('Location: bookshelf.php');
+        exit;
+    } else {
+        $error_message = "Failed to delete review";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -169,16 +183,16 @@ if (isset($_POST['submit_review'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookshelf - Libriverse</title>
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="bookshelf.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/bookshelf.css">
 </head>
 
 <body>
-     <!-- Sidebar Navbar (Left Sidebar) -->
-     <div class="navbar">
+    <!-- Sidebar Navbar (Left Sidebar) -->
+    <div class="navbar">
 
-        `<!-- Logo/Title Section -->
+        <!-- Logo/Title Section -->
         <div class="navbar-logo-section">
             <a href="index.php" class="navbar-logo">
                 <img src="assets/logo/libriverse_logo.png" alt="Libriverse Logo" class="navbar-logo-image">
@@ -190,31 +204,19 @@ if (isset($_POST['submit_review'])) {
         <ul class="navbar-pages">
             <li><a href="index.php" class="navbar-item"><img src="assets/icons/home.svg" alt="Home" class="navbar-icon white"><span class="navbar-label">Home</span></a></li>
             <li><a href="discover.php" class="navbar-item"><img src="assets/icons/explore.svg" alt="Discover" class="navbar-icon white"><span class="navbar-label">Discover</span></a></li>
-            <?php if (is_logged_in()): ?>
-                <li><a href="bookshelf.php" class="navbar-item active"><img src="assets/icons/collections.svg" alt="Bookshelf" class="navbar-icon white"><span class="navbar-label">Bookshelf</span></a></li>
-            <?php endif; ?>
+            <li><a href="bookshelf.php" class="navbar-item active"><img src="assets/icons/collections.svg" alt="Bookshelf" class="navbar-icon white"><span class="navbar-label">Bookshelf</span></a></li>
         </ul>
 
         <!-- User Section -->
         <ul class="navbar-user-section">
-            <?php if (is_logged_in()): ?>
-                <!-- Profile photo and username -->
-                <li><a href="profile.php" class="navbar-item">
+            <!-- Profile photo and username -->
+            <li><a href="profile.php" class="navbar-item username">
                     <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
                     <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-                </a></li>
-                <!-- Logout link -->
-                <li><a href="logout.php" class="navbar-item">
-                    <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white">
-                    <span class="navbar-label">Logout</span>
-                </a></li>
-            <?php else: ?>
-                <!-- Login link -->
-                <li><a href="login.php" class="navbar-item">
-                    <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
-                    <span class="navbar-label">Login</span>
-                </a></li>
-            <?php endif; ?>
+                </a><a href="logout.php" class="navbar-item">
+                    <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white logout">
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -371,7 +373,7 @@ if (isset($_POST['submit_review'])) {
                                                             name="cancel_request"
                                                             value="<?php echo $rental['id']; ?>"
                                                             class="button cancel">
-                                                            Cancel
+                                                            Cancel Request
                                                         </button>
                                                     </form>
                                                 </div>
@@ -394,6 +396,16 @@ if (isset($_POST['submit_review'])) {
                                                                                                                 ?>)">
                                                         <?php echo !is_null($rental['review_id']) ? 'Edit Review' : 'Review'; ?>
                                                     </button>
+                                                    <?php
+                                                    if (!is_null($rental['review_id'])) {
+                                                        echo '<form method="POST" class="delete-review-form">
+            <input type="hidden" name="review_id" value="' . $rental['review_id'] . '">
+            <button type="submit" name="delete_review" class="button cancel">
+                Delete Review
+            </button>
+          </form>';
+                                                    }
+                                                    ?>
                                                 </div>
                                         <?php
                                                 break;

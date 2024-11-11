@@ -147,14 +147,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile - Libriverse</title>
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/profile.css">
 </head>
 
 <body>
-     <!-- Sidebar Navbar (Left Sidebar) -->
-     <div class="navbar">
+    <!-- Sidebar Navbar (Left Sidebar) -->
+    <div class="navbar">
 
         <!-- Logo/Title Section -->
         <div class="navbar-logo-section">
@@ -177,21 +177,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <ul class="navbar-user-section">
             <?php if (is_logged_in()): ?>
                 <!-- Profile photo and username -->
-                <li><a href="profile.php" class="navbar-item active">
-                    <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
-                    <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-                </a></li>
-                <!-- Logout link -->
-                <li><a href="logout.php" class="navbar-item">
-                    <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white">
-                    <span class="navbar-label">Logout</span>
-                </a></li>
+                <li><a href="profile.php" class="navbar-item active username">
+                        <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
+                        <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+                    </a><a href="logout.php" class="navbar-item">
+                        <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white logout">
+                    </a>
+                </li>
             <?php else: ?>
                 <!-- Login link -->
                 <li><a href="login.php" class="navbar-item">
-                    <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
-                    <span class="navbar-label">Login</span>
-                </a></li>
+                        <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
+                        <span class="navbar-label">Login</span>
+                    </a></li>
             <?php endif; ?>
         </ul>
     </div>
@@ -199,7 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="main-container">
         <div class="profile-header">
             <h1>User Profile</h1>
-            <h2><?php echo htmlspecialchars($user['username'] ?? 'null'); ?></h2>
         </div>
 
         <?php if (!empty($success_message)): ?>
@@ -211,9 +208,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <div class="profile-content">
             <!-- Email Update Form -->
+            <h3>Account Management</h3>
             <form action="profile.php" method="post" class="account-management-form">
                 <section class="profile-section email-section">
-                    <h3>Email Management</h3>
+
 
                     <div class="form-group">
                         <label for="email">Email Address:</label>
@@ -234,9 +232,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
 
             <!-- Password Update Form -->
+            <h3>Password Management</h3>
             <form action="profile.php" method="post" class="account-management-form">
                 <section class="profile-section password-section">
-                    <h3>Password Management</h3>
+
 
                     <div class="form-group">
                         <label for="current_password">Current Password:</label>
@@ -301,9 +300,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
             </form>
 
+            <h3>Personal Details</h3>
             <form action="profile.php" method="post" class="personal-details-form">
                 <section class="profile-section">
-                    <h3>Personal Details</h3>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first_name">First Name:</label>
@@ -320,8 +320,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </section>
             </form>
 
+            <h3>Payment Methods</h3>
             <section class="profile-section">
-                <h3>Payment Methods</h3>
                 <div class="payment-methods">
                     <?php if (empty($payment_methods)): ?>
                         <p>No payment methods added yet.</p>

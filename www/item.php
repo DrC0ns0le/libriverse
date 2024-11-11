@@ -132,14 +132,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($book['title']); ?></title>
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="item.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/item.css">
 </head>
 
 <body>
     <!-- Sidebar Navbar (Left Sidebar) -->
-   <div class="navbar">
+    <div class="navbar">
 
         <!-- Logo/Title Section -->
         <div class="navbar-logo-section">
@@ -163,20 +163,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <?php if (is_logged_in()): ?>
                 <!-- Profile photo and username -->
                 <li><a href="profile.php" class="navbar-item">
-                    <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
-                    <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-                </a></li>
+                        <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
+                        <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+                    </a></li>
                 <!-- Logout link -->
                 <li><a href="logout.php" class="navbar-item">
-                    <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white">
-                    <span class="navbar-label">Logout</span>
-                </a></li>
+                        <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white">
+                        <span class="navbar-label">Logout</span>
+                    </a></li>
             <?php else: ?>
                 <!-- Login link -->
                 <li><a href="login.php" class="navbar-item">
-                    <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
-                    <span class="navbar-label">Login</span>
-                </a></li>
+                        <img src="assets/icons/login.svg" alt="Login" class="navbar-icon white">
+                        <span class="navbar-label">Login</span>
+                    </a></li>
             <?php endif; ?>
         </ul>
     </div>

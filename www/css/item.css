@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 40px;
-  margin: 40px 0;
+  margin-inline: 1rem;
 }
 
 /* Cover Section */
@@ -44,23 +44,7 @@
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.book-title {
-  font-family: "IBM Plex Serif", serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 24px 0;
-  line-height: 1.2;
-}
-
-h2 {
-  font-family: "IBM Plex Serif", serif;
-  font-size: 1.5rem;
-  color: var(--primary-color);
-  margin-bottom: 10px;
-  padding-bottom: 4px;
+  margin-left: 1rem;
 }
 
 .detail-item {
@@ -156,28 +140,6 @@ h2 {
 .bookmark-box,
 .rental-button {
   flex: 1;
-}
-
-.bookmark-box button,
-.rental-button {
-  width: 100%;
-  padding: 12px 24px;
-  border: none;
-  border-radius: var(--search-border-radius);
-  background-color: white;
-  color: var(--text-color);
-  font-weight: 500;
-  cursor: pointer;
-  font-family: "IBM Plex Sans", sans-serif;
-  font-size: 0.95rem;
-  border: 1px solid #e1e1e1;
-  transition: all 0.2s ease;
-}
-
-.bookmark-box button:hover,
-.rental-button:hover {
-  background-color: #f8f9fa;
-  border-color: #d1d1d1;
 }
 
 .rental-button:hover:not(:disabled) {
@@ -364,6 +326,10 @@ h2 {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.popup-content h2 {
+  margin: 0 0 1rem 0;
+}
+
 .close {
   position: absolute;
   right: 1rem;
@@ -417,10 +383,7 @@ h2 {
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .form-group input:focus,
@@ -443,25 +406,6 @@ h2 {
   color: #2c5282;
 }
 
-.submit-button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: var(--search-border-radius);
-  background-color: white;
-  color: var(--text-color);
-  font-weight: 500;
-  cursor: pointer;
-  font-family: "IBM Plex Sans", sans-serif;
-  font-size: 0.95rem;
-  border: 1px solid #e1e1e1;
-  transition: all 0.2s ease;
-}
-
-.submit-button:hover {
-  background-color: #f8f9fa;
-  border-color: #d1d1d1;
-}
-
 .submit-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
@@ -474,24 +418,4 @@ h2 {
   border-radius: 4px;
   margin-top: 1rem;
   text-align: center;
-}
-
-button.ask-login-button {
-  width: 100%;
-  padding: 12px 24px;
-  border: none;
-  border-radius: var(--search-border-radius);
-  background-color: white;
-  color: var(--text-color);
-  font-weight: 500;
-  cursor: pointer;
-  font-family: "IBM Plex Sans", sans-serif;
-  font-size: 0.95rem;
-  border: 1px solid #e1e1e1;
-  transition: all 0.2s ease;
-}
-
-button.ask-login-button:hover {
-  background-color: #f8f9fa;
-  border-color: #d1d1d1;
 }
