@@ -240,7 +240,7 @@ $conn->close();
 
     <div class="main-container">
         <a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="logo" title="Discover Books ?>">
-            <h1>Discover</h1>
+            <h1>Let's find something new to read.</h1>
         </a>
 
         <div class="search-container">

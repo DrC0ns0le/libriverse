@@ -49,8 +49,8 @@ input.search-input {
 }
 
 .scroll-container::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  height: 0.5rem;
+  transition: all 0.3s ease-in-out;
 }
 
 .scroll-container::-webkit-scrollbar-track {
@@ -59,6 +59,7 @@ input.search-input {
 
 .scroll-container::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
+  border-radius: 0.5rem;
 }
 
 .scroll-container::-webkit-scrollbar-thumb:hover {
@@ -111,13 +112,14 @@ input.search-input {
   height: 300px;
   padding: 10px;
   object-fit: cover;
+  border-radius: 1rem;
 }
 
 .book-title,
 .book-author,
 .book-genre,
 .book-rating {
-  padding: 5px 10px;
+  padding: 0px 10px;
 }
 
 .book-title {
@@ -217,7 +219,7 @@ input.search-input {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 20px;
+  padding: 1rem;
   text-decoration: none;
   color: inherit;
   margin: auto;
@@ -228,18 +230,22 @@ input.search-input {
   height: 270px;
   object-fit: cover;
   margin-right: 30px;
+  padding: 0;
+  border-radius: 0.25rem;
 }
 
 .book-grid.vertical-grid .book-info {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-top: 0.5rem;
 }
 
 .book-grid.vertical-grid .book-title {
   font-size: 2rem;
   font-weight: bold;
   margin: 0px;
+  padding-bottom: 0px;
   color: var(--text-color);
   word-wrap: break-word;
 }
@@ -247,6 +253,7 @@ input.search-input {
 .book-grid.vertical-grid .book-author {
   font-size: 1rem;
   color: var(--text-color);
+  padding-top: 0px;
   margin-bottom: 0.5rem;
 }
 

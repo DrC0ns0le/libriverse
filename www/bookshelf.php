@@ -255,12 +255,12 @@ if (isset($_POST['delete_review'])) {
     </div>
 
     <div class="main-container">
-        <h1>Bookshelf</h1>
+        <h1>Your Bookshelf</h1>
 
         <?php if (empty($search_term) && empty($status_filter)): ?>
             <section class="section bookmarks-section">
                 <div class="section-title">
-                    <span>Your Bookmarks</span>
+                    <span>Bookmarks</span>
                 </div>
                 <div class="scroll-container">
                     <div class="book-grid">

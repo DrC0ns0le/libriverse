@@ -328,7 +328,7 @@
 }
 
 .status-badge {
-  border: 1px solid var(--border-color);
+  border: 1px solid white;
   width: fit-content;
   padding: 0.25rem 6px;
   font-size: 0.7rem;

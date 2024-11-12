@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <ul class="navbar-user-section">
         <?php if (is_logged_in()): ?>
             <!-- Profile photo and username -->
-            <li><a href="profile.php" class="navbar-item username">
+            <li><a href="profile.php" class="navbar-item username active">
                     <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
                     <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
                 </a>

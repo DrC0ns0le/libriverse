@@ -45,12 +45,12 @@
 .navbar-logo-image {
   width: 30px;
   height: auto;
-  filter: brightness(0);
+  filter: contrast(0) brightness(0);
   margin-right: 10px;
 }
 
 :root[data-theme="dark"] .navbar-logo-image {
-  filter: invert(1) brightness(104%) contrast(101%);
+  filter: invert(1) brightness(10);
 }
 
 /* Navbar Links and Items */
@@ -95,6 +95,7 @@
   width: auto;
   height: 20px;
   margin-right: 0.5rem;
+  filter: brightness(0);
 }
 
 :root[data-theme="dark"] .navbar-icon {

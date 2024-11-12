@@ -89,7 +89,7 @@ $banners = $result->fetch_all(MYSQLI_ASSOC);
     </div>
 
     <div class="main-container">
-        <h1>Hello!</h1>
+        <h1>Hello! What are we reading today?</h1>
         <div class="banner-section">
             <?php foreach ($banners as $index => $banner): ?>
                 <div class="banner">
@@ -106,6 +106,14 @@ $banners = $result->fetch_all(MYSQLI_ASSOC);
                     </div>
                 </div>
             <?php endforeach; ?>
+        </div>
+
+        <div class="search-container">
+            <h2>Looking for something?</h2>
+            <form action="discover.php" method="GET">
+                <input type="text" name="search" class="search-input" placeholder="Search for books, authors, or genres...">
+                <button type="submit" class="search-button">Search</button>
+            </form>
         </div>
     </div>
 
