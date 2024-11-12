@@ -326,7 +326,6 @@
 }
 
 .status-badge {
-  border: 1px solid white;
   width: fit-content;
   padding: 0.25rem 6px;
   font-size: 0.7rem;
@@ -334,6 +333,8 @@
   text-transform: uppercase;
   font-weight: 700;
   font-family: "IBM Plex Sans", sans-serif;
+  color: var(--text-light);
+  background-color: var(--active-dark);
 }
 
 :root[data-theme="dark"] .status-badge {
@@ -343,25 +344,32 @@
 .status-badge.ready {
   background-color: #d4edda;
   color: #155724;
-  border: 0px;
 }
 
 .status-badge.requested {
   background-color: #fff3cd;
   color: #856404;
-  border: 0px;
 }
 
 .status-badge.preparing {
   background-color: #f2d6b5;
   color: #5f5241;
-  border: 0px;
 }
 
 .status-badge.collected {
   background-color: #cfe2fd;
   color: #084298;
-  border: 0px;
+}
+
+.status-badge.cancelled {
+  background-color: #ffbeba;
+  color: #982a22;
+}
+
+.status-badge.returned {
+  background-color: var(--top-background-color);
+  border: 1px solid var(--border-focus-color);
+  color: var(--text-color);
 }
 
 .last-updated {
