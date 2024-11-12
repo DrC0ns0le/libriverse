@@ -150,6 +150,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/profile.css">
+
+    <script>
+        // Immediately set the theme before the page renders
+        (function() {
+            let theme = localStorage.getItem('theme');
+
+            // If no theme is saved, check system preference
+            if (!theme) {
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            // Apply theme immediately
+            document.documentElement.setAttribute('data-theme', theme);
+
+            // Optional: Add a class to body to indicate JS is loaded
+            document.documentElement.classList.add('theme-loaded');
+        })();
+    </script>
 </head>
 
 <body>
@@ -183,16 +201,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
     </ul>
 
-
-
     <!-- User Section -->
     <ul class="navbar-user-section">
         <?php if (is_logged_in()): ?>
             <!-- Profile photo and username -->
-            <li><a href="profile.php" class="navbar-item active username">
+            <li><a href="profile.php" class="navbar-item username">
                     <img src="assets/profile-photo/golden_retriever.jpeg" alt="User Photo" class="navbar-user-photo">
                     <span class="navbar-username"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-                </a><a href="logout.php" class="navbar-item">
+                </a>
+            </li>
+            <!-- Icon Toggle -->
+            <li class="icon-toggle">
+                <button id="themeToggle" class="navbar-item">
+                    <img src="assets/icons/light-mode.svg" alt="Light Mode" class="navbar-icon theme-light">
+                    <img src="assets/icons/dark-mode.svg" alt="Dark Mode" class="navbar-icon theme-dark">
+                </button>
+                <a href="logout.php" class="navbar-item logout">
                     <img src="assets/icons/logout.svg" alt="Logout" class="navbar-icon white logout">
                 </a>
             </li>
@@ -498,6 +522,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             });
         });
+
+        // Listener to handle dark/light mode toggle
+
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Check for saved theme preference or default to system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        }
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
     });
 </script>
 

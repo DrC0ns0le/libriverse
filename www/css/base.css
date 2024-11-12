@@ -6,11 +6,27 @@
   --text-color: #0b0706;
   --text-light: #f8f9fa;
   --background-color: #fcfcfc;
+  --background-focus-color: #e0e0dd;
   --top-background-color: #ffffff;
   --element-background: #dedede;
   --border-color: #e0e0dd;
   --border-focus-color: #0b0706;
-  --search-border-radius: 12px;
+  --active-dark: #181818;
+  --search-border-radius: 0.75rem;
+}
+
+:root[data-theme="dark"] {
+  --primary-color: #f5f5f5;
+  --secondary-color: #0b0706;
+  --text-color: #f8f9fa;
+  --text-light: #0b0706;
+  --background-color: #121212;
+  --background-focus-color: #3e3e3e;
+  --top-background-color: #181818;
+  --element-background: #282828;
+  --border-color: #787878;
+  --border-focus-color: #f5f5f5;
+  --active-dark: #9c9c9c;
 }
 
 .logo {
@@ -75,29 +91,35 @@ input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea {
-  padding: 12px 24px;
-  border: 1px solid #e1e1e1;
+  padding: 0.75rem 1.5rem;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--top-background-color);
   font-size: 0.95rem;
   font-family: "IBM Plex Sans", sans-serif;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
   appearance: none;
 }
 
 select {
-  padding: 12px 24px;
-  border: 1px solid #e1e1e1;
+  padding: 0.75rem 1.5rem;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--top-background-color);
   font-size: 0.95rem;
   font-family: "IBM Plex Sans", sans-serif;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 38px;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+
+:root[data-theme="dark"] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23fff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
 }
 
 input[type="text"]:focus,
@@ -115,41 +137,41 @@ input[type="number"]:hover,
 input[type="email"]:hover,
 input[type="password"]:hover,
 select:hover {
-  border-color: #838383;
+  border-color: var(--border-focus-color);
 }
 
 input[type="submit"],
 input[type="reset"],
 button {
-  padding: 12px 24px;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--top-background-color);
   color: var(--text-color);
   font-weight: 500;
   cursor: pointer;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
-  border: 1px solid #e1e1e1;
-  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease-in-out;
 }
 
 input[type="submit"]:hover,
 input[type="reset"]:hover,
 button:hover {
-  background-color: #f8f9fa;
-  border-color: #838383;
+  background-color: var(--background-focus-color);
+  border-color: var(--border-focus-color);
 }
 
 input[type="file"] {
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
   color: var(--text-color);
-  padding: 12px 24px;
-  border: 1px solid #e1e1e1;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-color);
   border-radius: var(--search-border-radius);
-  background-color: white;
-  transition: all 0.2s ease;
+  background-color: var(--top-background-color);
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
 }
 
@@ -158,11 +180,11 @@ input[type="file"] {
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
   color: var(--text-color);
-  padding: 12px 24px;
-  border: 1px solid #e1e1e1;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-color);
   border-radius: var(--search-border-radius);
-  background-color: white;
-  transition: all 0.2s ease;
+  background-color: var(--top-background-color);
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
   box-sizing: border-box;
   display: flex;
@@ -173,32 +195,32 @@ input[type="file"]::file-selector-button {
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
-  padding: 12px 24px;
-  margin-right: 16px;
-  margin-left: -24px;
+  padding: 0.75rem 1.5rem;
+  margin-right: 1rem;
+  margin-left: -1.5rem;
   border: none;
-  border-right: 1px solid #e1e1e1;
-  background-color: #f8f9fa;
+  border-right: 1px solid var(--border-color);
+  background-color: var(--top-background-color);
   color: var(--text-color);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
   height: 100%;
   align-self: stretch;
-  margin-top: -12px;
-  margin-bottom: -12px;
+  margin-top: -0.75rem;
+  margin-bottom: -0.75rem;
 }
 
 input[type="file"]::file-selector-button:hover {
-  background-color: #e9ecef;
+  background-color: var(--background-focus-color);
 }
 
 /* Table */
 table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #e1e1e1;
-  border-radius: 24px;
-  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  background-color: var(--top-background-color);
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
   color: var(--text-color);
@@ -207,13 +229,13 @@ table {
 
 th,
 td {
-  padding: 12px;
+  padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #e1e1e1;
+  border-bottom: 1px solid var(--border-color);
 }
 
 thead {
-  background-color: #f8f9fa;
+  background-color: var(--secondary-color);
   font-weight: 500;
 }
 
@@ -232,27 +254,29 @@ thead {
 
 .pagination {
   padding: 0.25rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
   text-decoration: none;
-  color: #333;
+  color: var(--active-dark);
   background: #fff;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
 }
 
 .pagination:hover {
-  background: #f5f5f5;
+  border: 1px solid var(--border-focus-color);
 }
 
 .pagination.active {
-  background: #494949;
-  color: #fff;
-  border-color: #494949;
+  background: var(--active-dark);
+  color: var(--text-light);
+  border: 1px solid var(--border-focus-color);
 }
 
 .page-ellipsis {
   padding: 0.5rem;
-  color: #666;
+  color: var(--text-color);
 }
 
 .results-section {

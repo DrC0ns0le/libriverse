@@ -25,7 +25,7 @@ $redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
         .back-link {
             text-decoration: none;
             display: inline-block;
-            padding: 12px 24px;
+            padding: 0.75rem 1.5rem;
             border: none;
             border-radius: var(--search-border-radius);
             background-color: white;

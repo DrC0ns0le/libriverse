@@ -2,16 +2,14 @@
 
 .no-bookmarks-message {
   text-align: center;
-  width: 100%;
   padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  background-color: var(--top-background-color);
+  border-radius: 0.5rem;
   color: var(--text-color);
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 1rem;
   line-height: 1.5;
-  margin: 20px 0;
-  border: 1px solid #e1e1e1;
+  margin: 20px auto;
 }
 
 .no-bookmarks-message a {
@@ -58,25 +56,25 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: white;
-  border-radius: 8px;
+  background-color: var(--top-background-color);
+  border-radius: 0.5rem;
   width: 220px;
-  margin-inline: 8px;
-  transition: all 0.3s ease;
+  margin-inline: 0.5rem;
+  transition: all 0.3s ease-in-out;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
 .book-card:hover {
   transform: scale(1.005);
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0.75rem rgba(0, 0, 0, 0.1);
 }
 
 .book-card .book-image {
   width: 220px;
   height: 350px;
   object-fit: cover;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
 }
 
 .book-image-container {
@@ -105,7 +103,7 @@
 }
 
 .book-author {
-  color: #666;
+  color: var(--text-color);
   font-size: 0.9rem;
 }
 
@@ -115,7 +113,7 @@
   right: 10px;
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .book-card:hover .remove-form {
@@ -127,15 +125,15 @@
   background-color: rgb(245, 245, 245);
   border: none;
   border-radius: 15%;
-  width: 24px;
-  height: 24px;
-  font-size: 14px;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.9rem;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease-in-out;
   padding: 0;
 }
 
@@ -145,21 +143,21 @@
 
 .book-actions {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   padding: 5px 10px;
   width: 100%;
 }
 
 .action-button {
   flex: 1;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
   font-size: 0.9rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .section-title {
@@ -167,14 +165,14 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 10px;
-  margin-top: 12px;
+  margin-top: 0.75rem;
   padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
 }
 
 .section-title span {
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-color);
   text-transform: capitalize;
   margin-left: 1rem;
 }
@@ -204,7 +202,7 @@
 .filters-container form {
   margin-inline: 1rem;
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -222,7 +220,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 1rem;
   cursor: pointer;
   display: none;
 }
@@ -239,7 +237,7 @@
 .filter-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 /* Requests section */
@@ -264,18 +262,18 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 16px;
-  margin: 8px;
+  padding: 1rem;
+  margin: 0.5rem;
   background-color: var(--top-background-color);
   border-radius: 10px;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
 .rental-card:hover {
   transform: scale(1.005);
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0.75rem rgba(0, 0, 0, 0.1);
 }
 
 .rental-card .book-image {
@@ -283,7 +281,7 @@
   height: 200px;
   object-fit: cover;
   margin-right: 30px;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 
 .rental-info {
@@ -312,32 +310,36 @@
 .rental-info .book-author {
   font-size: 1rem;
   color: var(--text-color);
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
 
 .rental-details {
   display: flex;
   flex-direction: column;
   margin-top: auto;
-  margin-bottom: 4px;
+  margin-bottom: 0.25rem;
 }
 
 .status-indicator {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 0.25rem;
 }
 
 .status-badge {
-  border: 1px solid #e1e1e1;
+  border: 1px solid var(--border-color);
   width: fit-content;
-  padding: 4px 6px;
+  padding: 0.25rem 6px;
   font-size: 0.7rem;
   border-radius: 5px;
   text-transform: uppercase;
   font-weight: 700;
   font-family: "IBM Plex Sans", sans-serif;
+}
+
+:root[data-theme="dark"] .status-badge {
+  filter: brightness(0.6) contrast(3);
 }
 
 .status-badge.ready {
@@ -370,7 +372,7 @@
   margin-left: 10px;
   justify-self: end;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .last-updated:hover {
@@ -398,11 +400,11 @@
   display: flex;
   flex-direction: row;
   margin-top: auto;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .rental-card .actions .button {
-  padding: 8px 18px;
+  padding: 0.5rem 1rem;
   font-size: 0.8rem;
 }
 
@@ -439,7 +441,7 @@
 
 .review-form select {
   width: 100%;
-  padding: 8px;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 3px;
 }
@@ -462,13 +464,13 @@
 }
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: var(--background-color);
   margin: 15% auto;
-  padding: 24px;
+  padding: 1.5rem;
   border: 1px solid #888;
   width: 80%;
   max-width: 400px;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   position: relative;
 }
 
@@ -481,7 +483,7 @@
   right: 20px;
   top: 10px;
   color: #aaa;
-  font-size: 28px;
+  font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
 }
@@ -510,7 +512,7 @@
   font-size: 30px;
   padding: 0 2px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .stars label:hover,
@@ -531,29 +533,29 @@
 
 .form-group textarea {
   width: 100%;
-  padding: 8px;
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   resize: vertical;
   box-sizing: border-box;
 }
 
 .submit-review {
-  padding: 12px 24px;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: var(--search-border-radius);
-  background-color: white;
+  background-color: var(--top-background-color);
   color: var(--text-color);
   font-weight: 500;
   cursor: pointer;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.95rem;
-  border: 1px solid #e1e1e1;
-  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease-in-out;
   width: 100%;
 }
 
 .submit-review:hover {
   background-color: #f8f9fa;
-  border-color: #838383;
+  border-color: var(--border-focus-color);
 }
