@@ -67,7 +67,6 @@
   margin: 0 5px;
   cursor: pointer;
   padding: 0;
-  transition: background 0.3s ease-in-out;
 }
 
 .banner-nav button:hover,

@@ -29,6 +29,10 @@
   --active-dark: #b8b8b8;
 }
 
+* {
+  transition: all 0.3s ease-in-out;
+}
+
 .logo {
   text-decoration: none;
   color: inherit;
