@@ -368,7 +368,7 @@
 
 .last-updated {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-color);
   margin-left: 10px;
   justify-self: end;
   opacity: 0;
@@ -377,7 +377,7 @@
 
 .last-updated:hover {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-color);
   margin-left: 10px;
   justify-self: end;
   opacity: 1;
@@ -533,29 +533,9 @@
 
 .form-group textarea {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  resize: vertical;
   box-sizing: border-box;
 }
 
 .submit-review {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: var(--search-border-radius);
-  background-color: var(--top-background-color);
-  color: var(--text-color);
-  font-weight: 500;
-  cursor: pointer;
-  font-family: "IBM Plex Sans", sans-serif;
-  font-size: 0.95rem;
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease-in-out;
   width: 100%;
-}
-
-.submit-review:hover {
-  background-color: #f8f9fa;
-  border-color: var(--border-focus-color);
 }

@@ -21,12 +21,33 @@ if (isset($_GET['items_per_page']) && in_array($itemsPerPage, $validItemsPerPage
     setcookie('items_per_page', $itemsPerPage, time() + (86400 * 30), '/');
 }
 
+// Utility function to calculate combined rating
+function getCombinedRatingSQL()
+{
+    return "CASE 
+                WHEN c.ratings IS NOT NULL AND r.avg_rating IS NOT NULL 
+                    THEN (c.ratings + r.avg_rating) / 2
+                WHEN c.ratings IS NOT NULL THEN c.ratings
+                WHEN r.avg_rating IS NOT NULL THEN r.avg_rating
+                ELSE NULL
+            END as combined_rating";
+}
+
 // Function to get total number of results
 function getTotalResults($conn, $query, $genre, $rating, $author)
 {
     $sql = "SELECT COUNT(*) as total 
-            FROM catalog 
-            WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
+        FROM (
+            SELECT c.id, c.title, c.author, c.genre,
+                   " . getCombinedRatingSQL() . "
+            FROM catalog c
+            LEFT JOIN (
+                SELECT catalog_id, AVG(rating) as avg_rating
+                FROM review
+                GROUP BY catalog_id
+            ) r ON c.id = r.catalog_id
+        ) as combined_books
+        WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
 
     $params = ["%$query%", "%$query%", "%$query%"];
     $types = "sss";
@@ -38,7 +59,7 @@ function getTotalResults($conn, $query, $genre, $rating, $author)
     }
 
     if ($rating > 0) {
-        $sql .= " AND ratings >= ?";
+        $sql .= " AND combined_rating >= ?";
         $params[] = $rating;
         $types .= "d";
     }
@@ -62,32 +83,38 @@ function searchBooks($conn, $query, $genre, $rating, $author, $page, $itemsPerPa
 {
     $offset = ($page - 1) * $itemsPerPage;
 
-    $sql = "SELECT id, title, author, genre, ratings, description, image_link 
-            FROM catalog
-            WHERE (title LIKE ? OR author LIKE ? OR genre LIKE ?)";
+    $sql = "SELECT c.id, c.title, c.author, c.genre, c.image_link, c.description, 
+            " . getCombinedRatingSQL() . "
+            FROM catalog c
+            LEFT JOIN (
+                SELECT catalog_id, AVG(rating) as avg_rating
+                FROM review
+                GROUP BY catalog_id
+            ) r ON c.id = r.catalog_id
+            WHERE (c.title LIKE ? OR c.author LIKE ? OR c.genre LIKE ?)";
 
     $params = ["%$query%", "%$query%", "%$query%"];
     $types = "sss";
 
     if (!empty($genre)) {
-        $sql .= " AND genre = ?";
+        $sql .= " AND c.genre = ?";
         $params[] = $genre;
         $types .= "s";
     }
 
     if ($rating > 0) {
-        $sql .= " AND ratings >= ?";
+        $sql .= " AND " . getCombinedRatingSQL() . " >= ?";
         $params[] = $rating;
         $types .= "d";
     }
 
     if (!empty($author)) {
-        $sql .= " AND author = ?";
+        $sql .= " AND c.author = ?";
         $params[] = $author;
         $types .= "s";
     }
 
-    $sql .= " ORDER BY title ASC LIMIT ? OFFSET ?";
+    $sql .= " ORDER BY c.title ASC LIMIT ? OFFSET ?";
     $params[] = $itemsPerPage;
     $params[] = $offset;
     $types .= "ii";
@@ -113,8 +140,14 @@ if (!empty($search) || !empty($selectedGenre) || $selectedRating > 0 || !empty($
 
 function getRandomBooks($conn, $limit = 6, $orderBy = '')
 {
-    $sql = "SELECT id, title, author, genre, ratings, image_link 
-            FROM catalog";
+    $sql = "SELECT c.id, c.title, c.author, c.genre, c.image_link, 
+            " . getCombinedRatingSQL() . "
+            FROM catalog c
+            LEFT JOIN (
+                SELECT catalog_id, AVG(rating) as avg_rating
+                FROM review
+                GROUP BY catalog_id
+            ) r ON c.id = r.catalog_id";
 
     if (!empty($orderBy)) {
         $sql .= " " . $orderBy;
@@ -144,9 +177,15 @@ $randomGenres = $genreResult->fetch_all(MYSQLI_ASSOC);
 $booksByGenre = [];
 foreach ($randomGenres as $genre) {
     $genreName = $genre['genre'];
-    $genreSQL = "SELECT id, title, author, genre, ratings, image_link 
-                 FROM catalog 
-                 WHERE genre = '" . $conn->real_escape_string($genreName) . "'
+    $genreSQL = "SELECT c.id, c.title, c.author, c.genre, c.image_link, 
+                 " . getCombinedRatingSQL() . "
+                 FROM catalog c
+                 LEFT JOIN (
+                     SELECT catalog_id, AVG(rating) as avg_rating
+                     FROM review
+                     GROUP BY catalog_id
+                 ) r ON c.id = r.catalog_id
+                 WHERE c.genre = '" . $conn->real_escape_string($genreName) . "'
                  ORDER BY RAND() 
                  LIMIT 12";
     $result = $conn->query($genreSQL);
@@ -315,7 +354,7 @@ $conn->close();
                                     <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
                                     <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
                                     <div class="book-author">by <?php echo htmlspecialchars($book['author']); ?></div>
-                                    <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                                    <div class="book-rating">★ <?php echo number_format($book['combined_rating'], 1); ?></div>
                                     <div class="book-description"><?php echo htmlspecialchars(substr($book['description'], 0, 150)) . '...'; ?></div>
                                 </div>
                             </a>
@@ -366,7 +405,7 @@ $conn->close();
                                 <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
                                 <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
                                 <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
-                                <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                                <div class="book-rating">★ <?php echo number_format($book['combined_rating'], 1); ?></div>
                             </a>
                         <?php endforeach; ?>
                     </div>
@@ -390,7 +429,7 @@ $conn->close();
                                     <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
                                     <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
                                     <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>
-                                    <div class="book-rating">★ <?php echo number_format($book['ratings'], 1); ?></div>
+                                    <div class="book-rating">★ <?php echo number_format($book['combined_rating'], 1); ?></div>
                                 </a>
                             <?php endforeach; ?>
                             <a href="<?php echo $_SERVER['PHP_SELF'] . '?genre=' . urlencode($genre); ?>" class="book-card see-more">

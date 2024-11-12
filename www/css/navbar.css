@@ -1,6 +1,8 @@
 /* Base Styles for the Navbar */
 .navbar {
-  width: 250px;
+  width: 20%;
+  min-width: 250px;
+  max-width: 350px;
   background-color: var(--background-color);
   color: var(--text-color);
   padding-top: 30px;
