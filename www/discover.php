@@ -102,16 +102,16 @@ function searchBooks($conn, $query, $genre, $rating, $author, $page, $itemsPerPa
         $types .= "s";
     }
 
-    if ($rating > 0) {
-        $sql .= " AND " . getCombinedRatingSQL() . " >= ?";
-        $params[] = $rating;
-        $types .= "d";
-    }
-
     if (!empty($author)) {
         $sql .= " AND c.author = ?";
         $params[] = $author;
         $types .= "s";
+    }
+
+    if ($rating > 0) {
+        $sql .= " HAVING combined_rating >= ?";
+        $params[] = $rating;
+        $types .= "d";
     }
 
     $sql .= " ORDER BY c.title ASC LIMIT ? OFFSET ?";
