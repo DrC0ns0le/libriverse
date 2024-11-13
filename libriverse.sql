@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mariadb
--- Generation Time: Nov 13, 2024 at 01:26 AM
+-- Generation Time: Nov 13, 2024 at 01:38 AM
 -- Server version: 11.5.2-MariaDB-ubu2404
 -- PHP Version: 8.2.8
 
@@ -32,7 +32,7 @@ CREATE TABLE `banner` (
   `title` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `image_link` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `banner`
@@ -54,7 +54,7 @@ CREATE TABLE `bookmark` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `catalog_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `bookmark`
@@ -98,7 +98,7 @@ CREATE TABLE `catalog` (
   `inventory` int(11) NOT NULL,
   `pdf_link` varchar(255) DEFAULT NULL,
   `image_link` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `catalog`
@@ -203,7 +203,7 @@ CREATE TABLE `payment` (
   `user_id` int(11) DEFAULT NULL,
   `type` enum('Debit','Credit','Paypal','Grabpay') NOT NULL,
   `last_4_digits` char(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payment`
@@ -234,7 +234,7 @@ CREATE TABLE `pickup_location` (
   `address` text NOT NULL,
   `opening_hours` text NOT NULL,
   `phone_number` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pickup_location`
@@ -267,7 +267,7 @@ CREATE TABLE `request` (
   `rental_duration` int(11) NOT NULL,
   `pickup_location_id` int(11) DEFAULT NULL,
   `payment_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `request`
@@ -300,7 +300,7 @@ CREATE TABLE `review` (
   `catalog_id` bigint(20) DEFAULT NULL,
   `rating` int(11) DEFAULT NULL CHECK (`rating` >= 1 and `rating` <= 5),
   `review` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `review`
@@ -529,7 +529,7 @@ CREATE TABLE `user` (
   `last_name` varchar(50) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `role` varchar(20) NOT NULL DEFAULT 'user'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
