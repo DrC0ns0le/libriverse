@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
         $stmt->execute();
     }
 
-    header("Location: manage_requests.php");
+    header("Location: requests.php");
     exit();
 }
 ?>

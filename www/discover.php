@@ -348,7 +348,7 @@ $conn->close();
                 <div class="scroll-container vertical-scroll">
                     <div class="book-grid vertical-grid">
                         <?php foreach ($searchResults as $book): ?>
-                            <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                            <a href="item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
                                 <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
                                 <div class="book-info">
                                     <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
@@ -400,7 +400,7 @@ $conn->close();
                 <div class="scroll-container">
                     <div class="book-grid">
                         <?php foreach ($popularBooks as $book): ?>
-                            <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                            <a href="item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
                                 <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
                                 <div class="book-genre"><?php echo htmlspecialchars($book['genre']); ?></div>
                                 <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
@@ -425,7 +425,7 @@ $conn->close();
                     <div class="scroll-container">
                         <div class="book-grid">
                             <?php foreach ($books as $book): ?>
-                                <a href="/item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
+                                <a href="item.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="book-card">
                                     <img src="<?php echo htmlspecialchars($book['image_link']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="book-image">
                                     <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
                                     <div class="book-author"><?php echo htmlspecialchars($book['author']); ?></div>

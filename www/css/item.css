@@ -221,7 +221,7 @@
 
 .review-text {
   line-height: 1.6;
-  color: #333;
+  color: var(--text-color)
 }
 
 /* Messages */
